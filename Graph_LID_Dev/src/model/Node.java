@@ -17,6 +17,7 @@ public class Node extends GraphFieldTemplate{
 			else langWeights.put(lang, 0);	
 		}
 		this.setTrigram(trigram);
+		
 	}
 	
 	public void setTrigram(String trigram) {
