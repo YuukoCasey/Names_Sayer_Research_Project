@@ -208,7 +208,7 @@ public class GraphLID {
 		GraphLID testGraph = new GraphLID();
 		testGraph.parseName("Yuuko", Language.JAPANESE);
 //		testGraph.parseName("Yuuko", Language.ENGLISH);
-		testGraph.parseName("Casey", Language.ENGLISH);
+		testGraph.parseName("Casey", Language.IRISH);
 		testGraph.parseName("Yumika", Language.JAPANESE);
 		testGraph.parseName("Yuu", Language.JAPANESE);		
 		testGraph.parseName("Takayama", Language.JAPANESE);
