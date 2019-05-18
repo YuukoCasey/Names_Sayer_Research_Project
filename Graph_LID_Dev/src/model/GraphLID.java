@@ -106,6 +106,59 @@ public class GraphLID {
 		return this.graphEdges.size();
 	}
 	
+	public Language predictLanguage(String name) {
+		
+		Language predictLanguage = Language.ENGLISH;
+		int nameLength = name.length();
+		if (nameLength == 0) return predictLanguage;
+		
+//		GraphFieldTemplate langPointAccumulator;
+		int numTrigrams = 0;
+		String pastTrigram = "";
+		String nextTrigram = "";
+		
+		if (nameLength <= 3) {
+			numTrigrams = 1;
+			pastTrigram = name;
+		}
+		else {
+			numTrigrams = nameLength - 2;
+			nextTrigram = GraphFieldTemplate.makeNextTrigram(0, name);
+//			pastTrigram = 
+		}
+		
+		PathPointsAccumulator langPointAccumulator = new PathPointsAccumulator(pastTrigram, nextTrigram);
+		
+		for (int i = 0; i < numTrigrams; i++) {
+			//For each trigram in the name, check whether or not it already exists in the graph
+			//Then increment the value for each language where relevant
+			
+			//Following that, do the same with the edge between adjacent trigrams
+			String currentTrigram = langPointAccumulator.getCurrentTrigram();
+			boolean nodeTrigramExists = this.nodeExists(currentTrigram);
+			
+			if (nodeTrigramExists) {
+				int nodeIndex = this.getNodeIndex(currentTrigram);
+				
+				Node currentNode = this.getNode(nodeIndex);
+				
+				for (Language lang : Language.values()) {
+					langPointAccumulator.increaseLangVal(lang, currentNode.getLangVal(lang));
+				}
+				
+			}
+			currentTrigram = langPointAccumulator.getNextTrigram();
+			langPointAccumulator.moveForward();
+			if (i < numTrigrams-1) {
+				langPointAccumulator.
+			}
+		}
+		
+		return Language.ENGLISH;
+			
+		
+	}
+	
 	public void parseName(String name, Language lang) {
 		//This function will take a name and a language as inputs, and add them to the graph
 		
@@ -138,6 +191,8 @@ public class GraphLID {
 			}
 			
 		}
+		
+		
 		
 	}
 	
