@@ -57,14 +57,14 @@ public class GraphLID {
 	public void incrementLangValNode(Language lang, String trigram) {
 		int index = this.getNodeIndex(trigram);
 		Node incrNode = graphNodes.get(index);
-		incrNode.incrementLangVal(lang);
+		incrNode.increaseLangVal(lang, 1);
 		graphNodes.set(index, incrNode);
 	}
 	
 	public void incrementLangValEdge(Language lang, String pastNodeTrigram, String nextNodeTrigram) {
 		int index = this.getEdgeIndex(pastNodeTrigram, nextNodeTrigram);
 		Edge incrEdge = graphEdges.get(index);
-		incrEdge.incrementLangVal(lang);
+		incrEdge.increaseLangVal(lang, 1);
 		graphEdges.set(index, incrEdge);
 	}
 	
@@ -92,7 +92,8 @@ public class GraphLID {
 	public boolean edgeExists(String pastNodeTrigram, String nextNodeTrigram) {
 		for (int i = 0; i < graphEdges.size(); i++) {
 			
-			if (graphEdges.get(i).getPastNodeTrigram().equals(pastNodeTrigram) && graphEdges.get(i).getNextNodeTrigram().equals(nextNodeTrigram)) return true;
+			if (graphEdges.get(i).getPastNodeTrigram().equals(pastNodeTrigram) && graphEdges.get(i).getNextNodeTrigram().equals(nextNodeTrigram)) 
+				return true;
 			
 		}
 		return false;
@@ -107,12 +108,14 @@ public class GraphLID {
 	}
 	
 	public Language predictLanguage(String name) {
+		//This function should be able to iterate through an input string to see if there is
+		//any relevant node for each trigram. If there is, that node's weight for each language
+		//is added to the PointAccumulator. 
 		
 		Language predictLanguage = Language.ENGLISH;
 		int nameLength = name.length();
 		if (nameLength == 0) return predictLanguage;
 		
-//		GraphFieldTemplate langPointAccumulator;
 		int numTrigrams = 0;
 		String pastTrigram = "";
 		String nextTrigram = "";
@@ -124,10 +127,13 @@ public class GraphLID {
 		else {
 			numTrigrams = nameLength - 2;
 			nextTrigram = GraphFieldTemplate.makeNextTrigram(0, name);
-//			pastTrigram = 
+			pastTrigram = name.substring(0, 3);
 		}
 		
 		PathPointsAccumulator langPointAccumulator = new PathPointsAccumulator(pastTrigram, nextTrigram);
+		
+		System.out.println();
+		System.out.println("TESTING FUNCTIONALITY OF 'predictLanguage' FUNCTION");
 		
 		for (int i = 0; i < numTrigrams; i++) {
 			//For each trigram in the name, check whether or not it already exists in the graph
@@ -135,7 +141,11 @@ public class GraphLID {
 			
 			//Following that, do the same with the edge between adjacent trigrams
 			String currentTrigram = langPointAccumulator.getCurrentTrigram();
-			boolean nodeTrigramExists = this.nodeExists(currentTrigram);
+			boolean nodeTrigramExists = this.nodeExists(currentTrigram); //Checks to see if the 
+																		 //node already exists
+			
+			System.out.println("\nThe current trigram is " + currentTrigram);
+			System.out.println("Does this trigram exist in the graph? " + nodeTrigramExists);
 			
 			if (nodeTrigramExists) {
 				int nodeIndex = this.getNodeIndex(currentTrigram);
@@ -143,18 +153,40 @@ public class GraphLID {
 				Node currentNode = this.getNode(nodeIndex);
 				
 				for (Language lang : Language.values()) {
+					System.out.println("The ");
 					langPointAccumulator.increaseLangVal(lang, currentNode.getLangVal(lang));
 				}
 				
 			}
-			currentTrigram = langPointAccumulator.getNextTrigram();
+			
+			//Now check that the relative edge exists and process similarly to node
+			if (nextTrigram != currentTrigram && nextTrigram != "") {
+				
+				boolean edgeTrigramExists = this.edgeExists(currentTrigram, nextTrigram);
+				
+				if (edgeTrigramExists) {
+					
+					int edgeIndex = this.getEdgeIndex(currentTrigram, nextTrigram);
+					
+					Edge currentEdge = this.getEdge(edgeIndex);
+					
+					for (Language lang : Language.values())
+						langPointAccumulator.increaseLangVal(lang, currentEdge.getLangVal(lang));
+					
+				}	
+				
+			}
+			
 			langPointAccumulator.moveForward();
 			if (i < numTrigrams-1) {
-				langPointAccumulator.
+				nextTrigram = GraphFieldTemplate.makeNextTrigram(i+1, name);
+				langPointAccumulator.setNextTrigram(nextTrigram);
 			}
 		}
 		
-		return Language.ENGLISH;
+		predictLanguage = langPointAccumulator.getMostLikelyLanguage();
+		
+		return predictLanguage;
 			
 		
 	}
@@ -275,6 +307,8 @@ public class GraphLID {
 		testGraph.parseName("Tchaikovsky", Language.RUSSIAN);
 		testGraph.parseName("Piotr", Language.RUSSIAN);
 		testGraph.parseName("Gagarin", Language.RUSSIAN);
+//		testGraph.parseName("Hinako", Language.JAPANESE);
+//		testGraph.parseName(name, lang);
 		
 		int nodeListSize = testGraph.getNodeListSize();
 		int edgeListSize = testGraph.getEdgeListSize();
@@ -310,6 +344,11 @@ public class GraphLID {
 			}
 			System.out.println();
 		}
+		
+		Language kanakoLanguage = testGraph.predictLanguage("Kanako");
+		
+		System.out.println("The language of origin for the name 'Kanako' was tested");
+		System.out.println("'Kanako' is a " + kanakoLanguage + " name");
 		
 	}
 

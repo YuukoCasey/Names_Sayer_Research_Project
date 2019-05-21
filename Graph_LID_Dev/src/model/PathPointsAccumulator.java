@@ -43,4 +43,17 @@ public class PathPointsAccumulator extends GraphFieldTemplate{
 		this.currentTrigram = this.nextTrigram;
 	}
 	
+	public Language getMostLikelyLanguage() {
+		Language returnLang = Language.ENGLISH;
+		int langVal = 0;
+		for (Language lang : Language.values()) {
+			int newLangVal = this.getLangVal(lang);
+			if (newLangVal > langVal) {
+				langVal = newLangVal;
+				returnLang = lang;
+			}
+		}
+		return returnLang;
+	}
+	
 }
