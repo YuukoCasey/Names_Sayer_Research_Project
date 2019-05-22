@@ -20,6 +20,11 @@ public class Node extends GraphFieldTemplate{
 		
 	}
 	
+	public Node(String trigram) {
+		this.setTrigram(trigram);
+		for (Language lang : Language.values()) langWeights.put(lang, 0);
+	}
+	
 	public void setTrigram(String trigram) {
 		if (trigram.length() == 3) this.trigram = trigram;
 	}

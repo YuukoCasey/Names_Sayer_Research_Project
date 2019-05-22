@@ -20,6 +20,12 @@ public class Edge extends GraphFieldTemplate{
 		
 	}
 	
+	public Edge(String pastNodeTrigram, String nextNodeTrigram) {
+		this.pastNodeTrigram = pastNodeTrigram;
+		this.nextNodeTrigram = nextNodeTrigram;
+		for (Language lang : Language.values()) langWeights.put(lang, 0);
+	}
+	
 	public String getPastNodeTrigram() {
 		return this.pastNodeTrigram;
 	}
