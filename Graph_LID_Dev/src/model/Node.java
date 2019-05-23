@@ -41,6 +41,11 @@ public class Node extends GraphFieldTemplate{
 		return this.trigram;
 	}
 	
+	public boolean hasSameName(Node node) {
+		if (this.trigram.equals(node.getTrigram())) return true;
+		return false;
+	}
+	
 //	public void incrementLangVal(Language lang) {
 //		langWeights.put(lang, (langWeights.get(lang) + 1));
 //	}

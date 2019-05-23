@@ -34,6 +34,13 @@ public class Edge extends GraphFieldTemplate{
 		return this.nextNodeTrigram;
 	}
 	
+	public boolean hasSameNames(Edge edge) {
+		if (edge.getPastNodeTrigram().equals(this.getPastNodeTrigram()) 
+				&& edge.getNextNodeTrigram().equals(this.getNextNodeTrigram())) 
+			return true;
+		return false;
+	}
+	
 //	public int getLangVal(Language lang) {
 //		return this.langWeights.get(lang);
 //	}

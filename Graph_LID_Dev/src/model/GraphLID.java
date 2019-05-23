@@ -30,12 +30,12 @@ public class GraphLID extends AbstractGraph{
 //		} else this.incrementLangValEdge(lang, pastNodeTrigram, nextNodeTrigram);
 //	}
 	
-	public int getNodeIndex(String trigram) {
-		for (int i = 0; i < graphNodes.size(); i++) {
-			if (graphNodes.get(i).getTrigram().equals(trigram)) return i;
-		}
-		return -1; //Incase the node does not exist
-	}
+//	public int getNodeIndex(String trigram) {
+//		for (int i = 0; i < graphNodes.size(); i++) {
+//			if (graphNodes.get(i).getTrigram().equals(trigram)) return i;
+//		}
+//		return -1; //Incase the node does not exist
+//	}
 	
 //	public Node getNodeByTrigram(Language lang, String trigram) {
 //		Node returnNode = new Node(lang, trigram);
@@ -107,6 +107,29 @@ public class GraphLID extends AbstractGraph{
 //		return this.graphEdges.size();
 //	}
 	
+	//	public void addNode(Language lang, String trigram) {
+	////			int index = this.getNodeIndex(trigram);
+	////			if (index == -1) graphNodes.add(new Node(lang, trigram)); //If the node does not exist
+	////			else this.incrementLangVal(lang, trigram);
+	//		if (this.graphNodes.size() == 0 || !this.nodeExists(trigram)) {
+	//			//Node newNode = new Node(lang, trigram);
+	//			graphNodes.add(new Node(lang, trigram));
+	//		} else this.incrementLangValNode(lang, trigram);
+	//	}
+		
+	//	public void addEdge(Language lang, String pastNodeTrigram, String nextNodeTrigram) {
+	//		if (this.graphEdges.size() == 0 || !this.edgeExists(pastNodeTrigram, nextNodeTrigram)) {
+	//			graphEdges.add(new Edge(lang, pastNodeTrigram, nextNodeTrigram));
+	//		} else this.incrementLangValEdge(lang, pastNodeTrigram, nextNodeTrigram);
+	//	}
+		
+		public int getNodeIndex(String trigram) {
+			for (int i = 0; i < graphNodes.size(); i++) {
+				if (graphNodes.get(i).getTrigram().equals(trigram)) return i;
+			}
+			return -1; //Incase the node does not exist
+		}
+
 	public Language predictLanguage(String name) {
 		//This function should be able to iterate through an input string to see if there is
 		//any relevant node for each trigram. If there is, that node's weight for each language
@@ -115,6 +138,51 @@ public class GraphLID extends AbstractGraph{
 		Language predictLanguage = Language.ENGLISH;
 		
 		PathPointsAccumulator nameGraph = new PathPointsAccumulator(name);
+		
+		//For every Node that is in the intersection of sets this.graphNodes and nameGraph.nodeList
+		//add the language points of this.graphNodes.getNode(index) to the language values of
+		//nameGraph
+		
+		int nameGraphNodeNum = nameGraph.getNodeListSize();
+		
+		for (int i = 0; i < nameGraphNodeNum; i++) {
+			
+			Node nodeI = nameGraph.getNode(i);
+			
+			for (int j = 0; j < this.getNodeListSize(); j++) {
+				Node nodeJ = this.getNode(j);
+				if (nodeI.hasSameName(nodeJ)) {
+					
+					for (Language lang : Language.values()) {
+						int langVal = nodeJ.getLangVal(lang);
+						nameGraph.increaseLangVal(lang, langVal);
+					}
+					break;
+				}
+			}
+			
+		}
+		
+		//Same with every Edge that is in the intersection of sets this.graphEdges and
+		//nameGraph.edgeList
+		
+		int nameGraphEdgeNum = nameGraph.getEdgeListSize();
+		for (int i = 0; i < nameGraphEdgeNum; i++) {
+			Edge edgeI = nameGraph.getEdge(i);
+			for (int j = 0; j < this.getEdgeListSize(); j++) {
+				Edge edgeJ = this.getEdge(j);
+				if (edgeI.hasSameNames(edgeJ)) {
+					for (Language lang : Language.values()) {
+						int langVal = edgeJ.getLangVal(lang);
+						nameGraph.increaseLangVal(lang, langVal);
+					}
+					break;
+				}
+			}
+			
+		}
+		
+		predictLanguage = nameGraph.getMostLikelyLanguage();
 		
 		return predictLanguage;
 			
@@ -237,70 +305,123 @@ public class GraphLID extends AbstractGraph{
 		testGraph.parseName("Tchaikovsky", Language.RUSSIAN);
 		testGraph.parseName("Piotr", Language.RUSSIAN);
 		testGraph.parseName("Gagarin", Language.RUSSIAN);
+		testGraph.parseName("Junko", Language.JAPANESE);
+		testGraph.parseName("Ayaka", Language.JAPANESE);
+		testGraph.parseName("Taiki", Language.JAPANESE);
+		testGraph.parseName("Itadani", Language.JAPANESE);
+		testGraph.parseName("Risako", Language.JAPANESE);
+		testGraph.parseName("Tatsuya", Language.JAPANESE);
+		testGraph.parseName("Aiko", Language.JAPANESE);
+		testGraph.parseName("Akane", Language.JAPANESE);
+		testGraph.parseName("Kana", Language.JAPANESE);
+		testGraph.parseName("Aoi", Language.JAPANESE);
+		testGraph.parseName("Asuka", Language.JAPANESE);
+		testGraph.parseName("Chiaki", Language.JAPANESE);
+		testGraph.parseName("Hanako", Language.JAPANESE);
+		testGraph.parseName("Haruko", Language.JAPANESE);
+		testGraph.parseName("Hikari", Language.JAPANESE);
+		testGraph.parseName("Hikaru", Language.JAPANESE);
+		testGraph.parseName("Hitomi", Language.JAPANESE);
+		testGraph.parseName("Katsumi", Language.JAPANESE);
+		testGraph.parseName("Kotone", Language.JAPANESE);
+		testGraph.parseName("Kyoko", Language.JAPANESE);
+		testGraph.parseName("Midori", Language.JAPANESE);
+		testGraph.parseName("Miyako", Language.JAPANESE);
+		testGraph.parseName("Momoko", Language.JAPANESE);
+		testGraph.parseName("Nanapeko", Language.JAPANESE);
+		testGraph.parseName("Nanako", Language.JAPANESE);
+		testGraph.parseName("Naomi", Language.JAPANESE);
+		testGraph.parseName("Natsuko", Language.JAPANESE);
+		
+		testGraph.parseName("Abakumov", Language.RUSSIAN);
+		testGraph.parseName("Abdulov", Language.RUSSIAN);
+		testGraph.parseName("Abramov", Language.RUSSIAN);
+		testGraph.parseName("Abramovich", Language.RUSSIAN);
+		testGraph.parseName("Astakhov", Language.RUSSIAN);
+		testGraph.parseName("Aslanov", Language.RUSSIAN);
+		testGraph.parseName("Baskin", Language.RUSSIAN);
+		testGraph.parseName("Bebchuk", Language.RUSSIAN);
+		testGraph.parseName("Bebchuk", Language.RUSSIAN);
+		testGraph.parseName("Bezrukov", Language.RUSSIAN);
+		testGraph.parseName("Bezrodny", Language.RUSSIAN);
+		testGraph.parseName("Belyakov", Language.RUSSIAN);
+		testGraph.parseName("Bogomalov", Language.RUSSIAN);
+		testGraph.parseName("Bryzgalov", Language.RUSSIAN);
+		testGraph.parseName("Vikhrov", Language.RUSSIAN);
+		testGraph.parseName("Vinogradov", Language.RUSSIAN);
+		testGraph.parseName("Vedenin", Language.RUSSIAN);
+		testGraph.parseName("Vavilov", Language.RUSSIAN);
+		testGraph.parseName("Vorontsov", Language.RUSSIAN);
+		
 //		testGraph.parseName("Hinako", Language.JAPANESE);
 //		testGraph.parseName(name, lang);
 		
 		int nodeListSize = testGraph.getNodeListSize();
 		int edgeListSize = testGraph.getEdgeListSize();
 		System.out.println("Number of nodes is now " + nodeListSize);
-		System.out.println("Number of edges is now " + edgeListSize);
+		System.out.println("Number of edges is now " + edgeListSize + "\n");
 		
-		for (int i = 0; i < nodeListSize; i++) {
-			
-			Node tempNode = testGraph.getNode(i);
-			String nodeTrigram = tempNode.getTrigram();
-			System.out.println("\nFor this node, the trigram is " + nodeTrigram);
-			
-			for (Language lang : Language.values()) {
-				int langVal = tempNode.getLangVal(lang);
-//				if (lang == Language.ENGLISH || lang == Language.JAPANESE) System.out.println("For the node " + nodeTrigram + " the weight for " + lang + " is " + langVal);
-				System.out.println("For the node " + nodeTrigram + " the weight for " + lang + " is " + langVal);
-			}
-			
-		}
-		
-		System.out.println();
-		
-		for (int i = 0; i < edgeListSize; i++) {
-			
-			Edge tempEdge = testGraph.getEdge(i);
-			String edgePastTrigram = tempEdge.getPastNodeTrigram();
-			String edgeNextTrigram = tempEdge.getNextNodeTrigram();
-			
-			for (Language lang : Language.values()) {
-				int langVal = tempEdge.getLangVal(lang);
-//				if (lang.equals(Language.ENGLISH) || lang.equals(Language.JAPANESE)) System.out.println("For the edge from " + edgePastTrigram + " to " + edgeNextTrigram + " the weight of " + lang + " is " + langVal);
-				System.out.println("For the edge from " + edgePastTrigram + " to " + edgeNextTrigram + " the weight of " + lang + " is " + langVal);
-			}
-			System.out.println();
-		}
-		
-//		Language kanakoLanguage = testGraph.predictLanguage("Kanako");
+//		for (int i = 0; i < nodeListSize; i++) {
+//			
+//			Node tempNode = testGraph.getNode(i);
+//			String nodeTrigram = tempNode.getTrigram();
+//			System.out.println("\nFor this node, the trigram is " + nodeTrigram);
+//			
+//			for (Language lang : Language.values()) {
+//				int langVal = tempNode.getLangVal(lang);
+//				System.out.println("For the node " + nodeTrigram + " the weight for " + lang + " is " + langVal);
+//			}
+//			
+//		}
 //		
-//		System.out.println("The language of origin for the name 'Kanako' was tested");
-//		System.out.println("'Kanako' is a " + kanakoLanguage + " name");
+//		System.out.println();
+//		
+//		for (int i = 0; i < edgeListSize; i++) {
+//			
+//			Edge tempEdge = testGraph.getEdge(i);
+//			String edgePastTrigram = tempEdge.getPastNodeTrigram();
+//			String edgeNextTrigram = tempEdge.getNextNodeTrigram();
+//			
+//			for (Language lang : Language.values()) {
+//				int langVal = tempEdge.getLangVal(lang);
+//				System.out.println("For the edge from " + edgePastTrigram + " to " + edgeNextTrigram + " the weight of " + lang + " is " + langVal);
+//			}
+//			System.out.println();
+//		}
 		
-		PathPointsAccumulator testAccumulator = new PathPointsAccumulator("Kanako");
-		System.out.println("\nTesting out PathPointsAccumulator class.");
-		System.out.println("Object is called 'testAccumulator', and has a name of " + testAccumulator.getName());
+		Language kanakoLanguage = testGraph.predictLanguage("Kanako");
 		
-		ArrayList<Node> testList = testAccumulator.getNodeList();
-		for (int i = 0; i < testList.size(); i++) {
-			Node tempNode = testList.get(i);
-			System.out.println("\nNode " + (i+1) + " in the list has a trigram of " + tempNode.getTrigram());
-			for (Language lang : Language.values())
-				System.out.println("For this trigram, the language value for " + lang + " is " + tempNode.getLangVal(lang));
-		}
+		System.out.println("The language of origin for the name 'Kanako' was tested");
+		System.out.println("'Kanako' is a " + kanakoLanguage + " name");
 		
-		System.out.println();
 		
-		ArrayList<Edge> edgyTest = testAccumulator.getEdgeList();
-		for (int i = 0; i < edgyTest.size(); i++) {
-			Edge tempEdge = edgyTest.get(i);
-			System.out.println("\nEdge " + (i+1) + " in the list has a last trigram of " + tempEdge.getPastNodeTrigram() + " and a next trigram of " + tempEdge.getNextNodeTrigram());
-			for (Language lang : Language.values())
-				System.out.println("For this trigram, the language value for " + lang + " is " + tempEdge.getLangVal(lang));
-		}
+		Language vladimirLanguage = testGraph.predictLanguage("Vladimir");
+		
+		System.out.println("The language of origin for the name 'Vladimir' was tested");
+		System.out.println("'Vladimir' is a " + vladimirLanguage + " name");
+		
+		
+//		PathPointsAccumulator testAccumulator = new PathPointsAccumulator("Kanako");
+//		System.out.println("\nTesting out PathPointsAccumulator class.");
+//		System.out.println("Object is called 'testAccumulator', and has a name of " + testAccumulator.getName());
+//		
+//		ArrayList<Node> testList = testAccumulator.getNodeList();
+//		for (int i = 0; i < testList.size(); i++) {
+//			Node tempNode = testList.get(i);
+//			System.out.println("\nNode " + (i+1) + " in the list has a trigram of " + tempNode.getTrigram());
+//			for (Language lang : Language.values())
+//				System.out.println("For this trigram, the language value for " + lang + " is " + tempNode.getLangVal(lang));
+//		}
+//		
+//		System.out.println();
+//		
+//		ArrayList<Edge> edgyTest = testAccumulator.getEdgeList();
+//		for (int i = 0; i < edgyTest.size(); i++) {
+//			Edge tempEdge = edgyTest.get(i);
+//			System.out.println("\nEdge " + (i+1) + " in the list has a last trigram of " + tempEdge.getPastNodeTrigram() + " and a next trigram of " + tempEdge.getNextNodeTrigram());
+//			for (Language lang : Language.values())
+//				System.out.println("For this trigram, the language value for " + lang + " is " + tempEdge.getLangVal(lang));
+//		}
 		
 		
 	}
