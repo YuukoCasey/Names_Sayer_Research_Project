@@ -29,9 +29,9 @@ public class Node extends GraphFieldTemplate{
 		if (trigram.length() == 3) this.trigram = trigram;
 	}
 	
-	public int getLangVal(Language lang) {
-		return langWeights.get(lang);
-	}
+//	public int getLangVal(Language lang) {
+//		return langWeights.get(lang);
+//	}
 	
 	public HashMap<Language, Integer> getAllLangValues(){
 		return this.langWeights;
