@@ -63,9 +63,38 @@ public class MySQLiteTest {
 			prep.setString(2, "McNeil");
 			prep.execute();
 			
+			prep = con.prepareStatement("INSERT INTO user (fName, lName) values (?,?);");
+			prep.setString(1, "Yuuko");
+			prep.setString(2, "Casey");
+			prep.execute();
+			
 		}
 		
+		viewTable();
+		
 		con.close();
+		
+	}
+	
+	public static void viewTable() throws SQLException{
+		
+		String dbName = "MySQLiteTest.db";
+		
+		Statement stmt = null;
+		String query = "SELECT fName FROM user";
+		
+		try {
+			stmt = con.createStatement();
+			ResultSet rs = stmt.executeQuery(query);
+			while ( rs.next() ) {
+				
+				String firstName = rs.getString("fName");
+				System.out.println("Name is " + firstName);
+			}
+			
+		} finally {
+			if (stmt != null) stmt.close();
+		}
 		
 	}
 	
