@@ -85,7 +85,10 @@ public class GraphLID extends AbstractGraph{
 		if (name.length() == 0) return;
 		
 		int numOfTrigrams = 0;
-		if (name.length() <= 3) numOfTrigrams = 1; //Trigram is whole name
+		if (name.length() <= 3) { 
+			numOfTrigrams = 1; //Trigram is whole name
+			while(name.length() < 3) name = name + " ";
+		}
 		else numOfTrigrams = name.length() - 2;
 		
 		String trigram = "";
