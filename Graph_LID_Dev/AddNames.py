@@ -54,8 +54,8 @@ while (True):
 				input_languge = input_language[0:i] + input_language[i].upper() + input_language[i+1:]
 
 	input_source = ""
-	if (input_language == "Maori"):
-		input_source = "https://www.taiuru.maori.nz/maori-baby-names-list/"
+	if (input_language == "English"):
+		input_source = "https://www.behindthename.com/names/usage/english"
 
 	c.execute("SELECT name FROM names WHERE name = ? AND language = ?;", (input_name, input_language))
 	query_result = c.fetchall()

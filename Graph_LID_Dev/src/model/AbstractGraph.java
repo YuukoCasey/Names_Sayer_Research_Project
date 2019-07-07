@@ -12,7 +12,15 @@ public abstract class AbstractGraph {
 	
 	public boolean nodeExists(String trigram) {
 		for (int i = 0; i < nodeList.size(); i++) {
-			if (nodeList.get(i).getTrigram().equals(trigram)) return true;
+			try {
+				if (nodeList.get(i).getTrigram().equals(trigram)) return true;
+			} catch (Exception e) {
+				System.out.println("nodeList.get(i).getTrigram() returns " + nodeList.get(i).getTrigram());
+				System.out.println("trigram is " + trigram);
+				System.out.println("i is " + i);
+				System.out.println("size of nodeList is " + this.nodeList.size());
+				return false;
+			}
 		}
 		return false;
 	}
