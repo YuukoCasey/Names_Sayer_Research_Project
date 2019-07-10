@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import model.Language;
 import java.util.HashMap;
 import dbmanagement.DBManager;
+import java.util.Random;
+import java.sql.SQLException;
 
 public class GraphLID extends AbstractGraph{
 
@@ -121,6 +123,36 @@ public class GraphLID extends AbstractGraph{
 		
 	}
 	
+	public static ArrayList<String> makeRandomNameList(ArrayList<String> origList, String nameStart, int numNamesExtract, Language lang) throws Exception {
+		
+		ArrayList<String> returnList = new ArrayList<>();
+		DBManager dbm = new DBManager();
+		dbm.makeConnection();
+		
+		int numNameStart = dbm.getNumNamesStartString(lang, nameStart);
+		
+		for (int i = 0; i < numNamesExtract; i++) {
+			int randIndex = new Random().nextInt(numNameStart);
+			
+			String extractedString = origList.get(randIndex);
+			if (!GraphLID.stringInArrayList(returnList, extractedString)) returnList.add(extractedString);
+			
+		}
+		
+		dbm.closeConnection();
+		return returnList;
+		
+	}
+	
+	public static boolean stringInArrayList(ArrayList<String> inputList, String inputStr) {
+		
+		for (int i = 0; i < inputList.size(); i++) {
+			if (inputList.get(i).equals(inputStr)) return true;
+		}
+		
+		return false;
+	}
+	
 	public static void main(String[] args) {
 	
 		//Pair<String, Language> data_element;
@@ -134,53 +166,70 @@ public class GraphLID extends AbstractGraph{
 				ArrayList<String> langNames = dbm.getNames(lang);
 				
 				if (lang == Language.MAORI) {
-					int maoriNameStartSize = GraphLID.maoriNameStarts.length; //The number of elements in the NameStart array
-					double[] fractionArray = new double[maoriNameStartSize]; //The array of what percent of maori names start with each value in the NameStart array
 					
-					for (int i = 0; i < maoriNameStartSize; i++) {
+					int maoriLangNamesInDB = langNames.size();
+					int numMaoriNameStartPhonemes = GraphLID.maoriNameStarts.length;
+					double[] nameFractions = new double[numMaoriNameStartPhonemes];
+					
+					for (int i = 0; i < numMaoriNameStartPhonemes; i++) 
+						nameFractions[i] = 0;
+					
+					NamesIterateLoop:
+					for (int i = 0; i < maoriLangNamesInDB; i++) {
 						
-						String analyseString = GraphLID.maoriNameStarts[i];
-						if (analyseString.length() == 1) {
+						String curName = langNames.get(i);
+						//Iterate through the different possible phonemes at start of 
+						//names. 
+						NameStartIterateLoop:
+						for (int j = 0; j < numMaoriNameStartPhonemes; j++) {
 							
-							for (int j = 0; j < langNames.size(); j++) {
-								String langNameElement = langNames.get(j); //Gets a name
-								if(langNameElement.charAt(0) == analyseString.charAt(0)) { 
-									if ( ( analyseString == "N" && langNameElement.charAt(1) == 'g' ) || ( analyseString == "W" && langNameElement.charAt(1) == 'h' ) ) continue;
-									fractionArray[i] += 1.0;
-								} 
-							}
+							String curPhoneme = GraphLID.maoriNameStarts[j];
 							
-						} else { //Length should be 2
-							
-							for (int j = 0; j < langNames.size(); j++) {
-								String langNameElement = langNames.get(j);
-								if (langNameElement.length() < 2) continue;
-								
-								if(langNameElement.charAt(0) == analyseString.charAt(0) && langNameElement.charAt(1) == analyseString.charAt(1) ) {
-									fractionArray[i] += 1.0;
+							if (curPhoneme.length() == 1) {
+								if ( ( curName.charAt(0) == 'W' && curName.charAt(1) == 'h' ) || ( curName.charAt(0) == 'N' && curName.charAt(1) == 'g' ) ) continue; 
+								if (curPhoneme.charAt(0) == curName.charAt(0)) {
+									nameFractions[j] += 1.0;
+									break NameStartIterateLoop;
 								}
-								
 							}
 							
 						}
-							
-					}
-					
-					for (int i = 0; i < fractionArray.length; i++) {
-						
-						fractionArray[i] *= (100.0/langNames.size());
-						System.out.println("For the Maori names stored in this database, the percentage of names that start with '" 
-						+ GraphLID.maoriNameStarts[i] + "' is " + fractionArray[i]);
 						
 					}
 					
+					for (int i = 0; i < numMaoriNameStartPhonemes; i++)
+						nameFractions[i] /= (double)maoriLangNamesInDB;
 					
+					//Now get number of Samoan names in DB
+					int samoanNameSize = dbm.getNumNamesInLanguage(Language.SAMOAN);
+					int[] phonemeNumber = new int[numMaoriNameStartPhonemes];
+					
+					for (int i = 0; i < numMaoriNameStartPhonemes; i++) 
+						phonemeNumber[i] = (int)Math.round(nameFractions[i] * (double)samoanNameSize);
+					
+					//Now make sets of random names that start with particular phonemes
+					
+					ArrayList<ArrayList<String>> namesToUse = new ArrayList<>();
+					for (int i = 0; i < numMaoriNameStartPhonemes; i++) {
+						namesToUse.add(GraphLID.makeRandomNameList(langNames, GraphLID.maoriNameStarts[i], phonemeNumber[i], lang));
+					}
+					
+					for(int i = 0; i < namesToUse.size(); i++) {
+						ArrayList<String> extractedList = namesToUse.get(i);
+						for (int j = 0; j < extractedList.size(); j++) testGraph.parseName(extractedList.get(j), lang);
+					}
+					
+				} else if (lang == Language.SAMOAN) {
+					
+					for (int i = 0; i < langNames.size(); i++)
+						testGraph.parseName(langNames.get(i), lang);
 					
 				}
 				
-				for (int i = 0; i < langNames.size(); i++) {
-					testGraph.parseName(langNames.get(i), lang);
-				}
+//				for (int i = 0; i < langNames.size(); i++) {
+//					testGraph.parseName(langNames.get(i), lang);
+//				}
+				
 			}
 			
 			dbm.closeConnection();

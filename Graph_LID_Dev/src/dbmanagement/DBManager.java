@@ -1,5 +1,6 @@
 package dbmanagement;
 
+import model.GraphLID;
 import model.Language;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -106,6 +107,51 @@ public class DBManager implements DBManageable{
 		while ( rs.next() ) {
 			System.out.println("\t" + rs.getString("name"));
 		}
+		
+	}
+	
+	public int getNumNamesInLanguage(Language lang) throws SQLException{
+		
+		String languageString = "";
+		if (lang == Language.MAORI) languageString = "Maori";
+		else if (lang == Language.SAMOAN) languageString = "Samoan";
+		else languageString = "English";
+		
+		PreparedStatement prep = this.conn.prepareStatement("SELECT COUNT(*) AS name_count FROM names WHERE language=?");
+		prep.setString(1, languageString);
+		ResultSet rs = prep.executeQuery();
+		return rs.getInt("name_count");
+		
+	}
+	
+	public int getNumNamesStartString(Language lang, String nameStart) throws SQLException{
+		
+		int numNamesInLang = this.getNumNamesInLanguage(lang);
+		int returnNum = 0;
+		ArrayList<String> langNames = this.getNames(lang);
+		
+		for (int i = 0; i < numNamesInLang; i++) {
+				
+			String curName = langNames.get(i);
+				
+			if (nameStart.length() > curName.length()) continue;
+			boolean isDiff = false;
+			
+			for (int j = 0; j < nameStart.length(); j++) {
+			
+				if (nameStart.charAt(j) != curName.charAt(j)) {
+					isDiff = true;
+					break;
+				}
+			
+			}
+			
+			if (isDiff == false) 
+				returnNum++;
+			
+		}
+		
+		return returnNum;
 		
 	}
 	
