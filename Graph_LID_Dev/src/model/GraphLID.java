@@ -11,6 +11,9 @@ public class GraphLID extends AbstractGraph{
 	private ArrayList<Node> graphNodes = new ArrayList<>();
 	private ArrayList<Edge> graphEdges = new ArrayList<>();
 	
+	private static final String[] maoriNameStarts = {"A", "E", "H", "I", "K", "M", "N", "Ng", "O", "P", "R", "T", "U", "W", "Wh"};
+	private static final String[] englishNameStarts = {"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"};
+	
 	public GraphLID() {
 
 	}
@@ -129,6 +132,52 @@ public class GraphLID extends AbstractGraph{
 			
 			for (Language lang : Language.values()) {
 				ArrayList<String> langNames = dbm.getNames(lang);
+				
+				if (lang == Language.MAORI) {
+					int maoriNameStartSize = GraphLID.maoriNameStarts.length; //The number of elements in the NameStart array
+					double[] fractionArray = new double[maoriNameStartSize]; //The array of what percent of maori names start with each value in the NameStart array
+					
+					for (int i = 0; i < maoriNameStartSize; i++) {
+						
+						String analyseString = GraphLID.maoriNameStarts[i];
+						if (analyseString.length() == 1) {
+							
+							for (int j = 0; j < langNames.size(); j++) {
+								String langNameElement = langNames.get(j); //Gets a name
+								if(langNameElement.charAt(0) == analyseString.charAt(0)) { 
+									if ( ( analyseString == "N" && langNameElement.charAt(1) == 'g' ) || ( analyseString == "W" && langNameElement.charAt(1) == 'h' ) ) continue;
+									fractionArray[i] += 1.0;
+								} 
+							}
+							
+						} else { //Length should be 2
+							
+							for (int j = 0; j < langNames.size(); j++) {
+								String langNameElement = langNames.get(j);
+								if (langNameElement.length() < 2) continue;
+								
+								if(langNameElement.charAt(0) == analyseString.charAt(0) && langNameElement.charAt(1) == analyseString.charAt(1) ) {
+									fractionArray[i] += 1.0;
+								}
+								
+							}
+							
+						}
+							
+					}
+					
+					for (int i = 0; i < fractionArray.length; i++) {
+						
+						fractionArray[i] *= (100.0/langNames.size());
+						System.out.println("For the Maori names stored in this database, the percentage of names that start with '" 
+						+ GraphLID.maoriNameStarts[i] + "' is " + fractionArray[i]);
+						
+					}
+					
+					
+					
+				}
+				
 				for (int i = 0; i < langNames.size(); i++) {
 					testGraph.parseName(langNames.get(i), lang);
 				}
@@ -271,7 +320,9 @@ public class GraphLID extends AbstractGraph{
 		int edgeListSize = testGraph.getEdgeListSize();
 		System.out.println("Number of nodes is now " + nodeListSize);
 		System.out.println("Number of edges is now " + edgeListSize + "\n");
-//		
+		
+		Language testLanguage = testGraph.predictLanguage("Mata");
+		
 //		Language kanakoLanguage = testGraph.predictLanguage("Kanako");
 //		
 //		System.out.println("The language of origin for the name 'Kanako' was tested");
