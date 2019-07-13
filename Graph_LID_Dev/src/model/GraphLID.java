@@ -135,7 +135,8 @@ public class GraphLID extends AbstractGraph{
 			int randIndex = new Random().nextInt(numNameStart);
 			
 			String extractedString = origList.get(randIndex);
-			if (!GraphLID.stringInArrayList(returnList, extractedString)) returnList.add(extractedString);
+			if (!GraphLID.stringInArrayList(returnList, extractedString)) 
+				returnList.add(extractedString);
 			
 		}
 		
@@ -186,7 +187,7 @@ public class GraphLID extends AbstractGraph{
 							String curPhoneme = GraphLID.maoriNameStarts[j];
 							
 							if (curPhoneme.length() == 1) {
-								if ( ( curName.charAt(0) == 'W' && curName.charAt(1) == 'h' ) || ( curName.charAt(0) == 'N' && curName.charAt(1) == 'g' ) ) continue; 
+								if ( ( curName.charAt(0) == 'W' && curName.charAt(1) == 'h' ) || ( curName.charAt(0) == 'N' && curName.charAt(1) == 'g' ) ) continue NameStartIterateLoop; 
 								if (curPhoneme.charAt(0) == curName.charAt(0)) {
 									nameFractions[j] += 1.0;
 									break NameStartIterateLoop;
@@ -202,7 +203,7 @@ public class GraphLID extends AbstractGraph{
 					
 					//Now get number of Samoan names in DB
 					int samoanNameSize = dbm.getNumNamesInLanguage(Language.SAMOAN);
-					int[] phonemeNumber = new int[numMaoriNameStartPhonemes];
+					int[] phonemeNumber = new int[numMaoriNameStartPhonemes]; //This is the number of Maori names that will be used for each phoneme used to start a name
 					
 					for (int i = 0; i < numMaoriNameStartPhonemes; i++) 
 						phonemeNumber[i] = (int)Math.round(nameFractions[i] * (double)samoanNameSize);
@@ -225,10 +226,6 @@ public class GraphLID extends AbstractGraph{
 						testGraph.parseName(langNames.get(i), lang);
 					
 				}
-				
-//				for (int i = 0; i < langNames.size(); i++) {
-//					testGraph.parseName(langNames.get(i), lang);
-//				}
 				
 			}
 			
