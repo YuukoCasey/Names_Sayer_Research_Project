@@ -234,6 +234,26 @@ public class GraphLID extends AbstractGraph{
 			e.printStackTrace();
 		}
 		
+		for (int i = 0; i < testGraph.getNodeListSize(); i++) {
+			Node dispNode = testGraph.getNode(i);
+			System.out.println("Node '" + dispNode.getTrigram() + "' has the following language values: ");
+			for (Language lang : Language.values()) {
+				System.out.println("\t" + lang + ": " + dispNode.getLanguageValue(lang));
+			}
+			System.out.println("\n");
+		}
+		
+		for (int i = 0; i < testGraph.getEdgeListSize(); i++) {
+			Edge dispEdge = testGraph.getEdge(i);
+			System.out.println("Edge from '" + dispEdge.getPastNodeTrigram() + 
+					"' to '" + dispEdge.getNextNodeTrigram() + " has the following "
+							+ "language values: ");
+			for (Language lang : Language.values()) {
+				System.out.println("\t" + lang + ": " + dispEdge.getLanguageValue(lang));
+			}
+			System.out.println("\n");
+		}
+		
 //		GraphLID testGraph = new GraphLID();
 //		testGraph.parseName("Yuuko", Language.JAPANESE);
 //		testGraph.parseName("Yumika", Language.JAPANESE);
@@ -364,10 +384,13 @@ public class GraphLID extends AbstractGraph{
 //		
 		int nodeListSize = testGraph.getNodeListSize();
 		int edgeListSize = testGraph.getEdgeListSize();
-		System.out.println("Number of nodes is now " + nodeListSize);
-		System.out.println("Number of edges is now " + edgeListSize + "\n");
+		System.out.println("Number of nodes is " + nodeListSize);
+		System.out.println("Number of edges is " + edgeListSize + "\n");
 		
 		Language testLanguage = testGraph.predictLanguage("Mata");
+		System.out.println("The most likely language for 'Mata' is " + testLanguage + "\n");
+		testLanguage = testGraph.predictLanguage("Fetuao");
+		System.out.println("The most likely language for 'Fetuao' is " + testLanguage + "\n");
 		
 //		Language kanakoLanguage = testGraph.predictLanguage("Kanako");
 //		

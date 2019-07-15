@@ -46,6 +46,10 @@ public class Node extends GraphFieldTemplate{
 		return false;
 	}
 	
+	public int getLanguageValue(Language lang) {
+		return this.langWeights.get(lang);
+	}
+	
 //	public void incrementLangVal(Language lang) {
 //		langWeights.put(lang, (langWeights.get(lang) + 1));
 //	}
