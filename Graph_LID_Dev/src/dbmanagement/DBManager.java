@@ -166,4 +166,63 @@ public class DBManager implements DBManageable{
 		return smallestLangNum;
 	}
 	
+	public ArrayList<String> getNamesStartString(String nameStart, Language lang) throws SQLException{
+		
+		/**************************************************************************
+		 * This function serves to find any name in the database that starts with *
+		 * a given string for a given language                                    *
+		 *                                                                        *
+		 * Inputs:                                                                *
+		 * 	-The String a desired name will start with                            *
+		 *  -The Language from which the name should be from                      *
+		 *                                                                        *
+		 * Output:                                                                *
+		 * 	-An ArrayList of all the names in the database that start with the    *
+		 * 		start string for this language                                    *
+		 **************************************************************************/
+		
+		ArrayList<String> returnList = new ArrayList<>();
+		
+		String searchLanguage = "English";
+		if (lang == Language.MAORI) 
+			searchLanguage = "Maori";
+		else if (lang == Language.SAMOAN)
+			searchLanguage = "Samoan";
+		
+		PreparedStatement prep = this.conn.prepareStatement("SELECT name FROM names WHERE language=?");
+		prep.setString(1, searchLanguage);
+		ResultSet rs = prep.executeQuery();
+		
+		ArrayList<String> nameList = new ArrayList<>(); 
+		
+		while( rs.next() ) {	
+			nameList.add(rs.getString("name"));
+		}
+		
+		//The NameIterationLoop will be used to look at each name and determine whether
+		//it starts with the nameStart String. If so, the name will be added to the
+		//returnList
+		NameIterationLoop:
+		for (int i = 0; i < nameList.size(); i++) {
+			String examineName = nameList.get(i);
+			if (nameStart.length() == 0) returnList.add(examineName);
+			else{
+				if (examineName.length() < nameStart.length())
+					continue NameIterationLoop;
+				for (int j = 0; j < nameStart.length(); j++) {
+					if (examineName.charAt(j) != nameStart.charAt(j))
+						continue NameIterationLoop;
+					
+				}
+				//If the loop has not resulted in skipping to the next iteration of the 
+				//'NameIterationLoop' then the nameStart should be suitable for
+				//'examineName'
+				returnList.add(examineName);
+			}
+		}
+		
+		return returnList;
+		
+	}
+	
 }

@@ -148,14 +148,19 @@ public class GraphLID extends AbstractGraph{
 		DBManager dbm = new DBManager();
 		dbm.makeConnection();
 		
-		int numNameStart = dbm.getNumNamesStartString(lang, nameStart);
+		ArrayList<String> nameStartList = dbm.getNamesStartString(nameStart, lang);
 		
 		for (int i = 0; i < numNamesExtract; i++) {
-			int randIndex = new Random().nextInt(numNameStart);
 			
-			String extractedString = origList.get(randIndex);
-			if (!GraphLID.stringInArrayList(returnList, extractedString)) 
-				returnList.add(extractedString);
+			//TODO: explain what this [articular line of code does
+			int randIndex = new Random().nextInt(nameStartList.size());
+			
+			String extractedName = nameStartList.get(randIndex);
+			boolean nameIsAlreadyUsed = GraphLID.stringInArrayList(returnList, extractedName);
+
+			if (!nameIsAlreadyUsed) {
+				returnList.add(extractedName);
+			} else i--;
 			
 		}
 		
@@ -255,10 +260,10 @@ public class GraphLID extends AbstractGraph{
 		DBManager dbm = new DBManager();
 		dbm.makeConnection();
 		ArrayList<String> langNames = dbm.getNames(lang);
-		boolean isSmallestSampleLang = GraphLID.getLanguageLeastNames() == lang;
+//		boolean isSmallestSampleLang = GraphLID.getLanguageLeastNames() == lang;
 		
-		int langNamesInDB = dbm.getNumNamesInLanguage(lang);
-		int numLangToTrain = dbm.getNumNamesInLanguage(GraphLID.getLanguageLeastNames()) / 2;
+//		int langNamesInDB = dbm.getNumNamesInLanguage(lang);
+//		int numLangToTrain = dbm.getNumNamesInLanguage(GraphLID.getLanguageLeastNames()) / 2;
 		
 		int numNameStarters = GraphLID.genericNameStarts.length;
 		if (lang == Language.ENGLISH) numNameStarters = GraphLID.englishNameStarts.length;
@@ -275,6 +280,18 @@ public class GraphLID extends AbstractGraph{
 		for (int i = 0; i < nameFractions.length; i++) {
 			double temp_double = nameFractions[i] * trainingSize;
 			phonemeNumber[i] = (int)Math.round(temp_double);
+			
+			/* CODE FOR DEBUGGING STARTS */
+			
+//			if (lang == Language.ENGLISH) {
+//				System.out.println("The phoneme number for the letter " 
+//						+ GraphLID.englishNameStarts[i] + " is " + phonemeNumber[i]);
+//				
+//			}
+			//Result: only 8 English names that start with the letter 'A' should be parsed
+			
+			/* CODE FOR DEBUGGING ENDS */
+			
 		}
 		
 		ArrayList<ArrayList<String>> namesToUse = new ArrayList<>();
@@ -289,6 +306,14 @@ public class GraphLID extends AbstractGraph{
 		
 		for (int i = 0; i < namesToUse.size(); i++) {
 			ArrayList<String> extractedNames = namesToUse.get(i);
+			
+			/* CODE FOR DEBUGGING STARTS HERE */
+			if (lang == Language.ENGLISH) {
+				System.out.println("\n\nNumber of names that start with the letter " + 
+				GraphLID.englishNameStarts[i] + " is " + extractedNames.size() + "\n\n"); 
+			}
+			/* CODE FOR DEBUGGING ENDS HERE */
+			
 			for (int j = 0; j < extractedNames.size(); j++) {
 				
 				System.out.println("The name " + extractedNames.get(j) + " will be parsed for the language " + lang);
@@ -297,7 +322,7 @@ public class GraphLID extends AbstractGraph{
 			}
 		}
 		
-		//TODO: finish this function
+		//TODO: finish this function - finished but needs debugging
 		
 	}
 	
@@ -313,8 +338,6 @@ public class GraphLID extends AbstractGraph{
 			testGraph.trainAllLanguages();
 			
 			for (Language lang : Language.values()) {
-				
-				
 				
 //				ArrayList<String> langNames = dbm.getNames(lang);
 //				
