@@ -15,6 +15,8 @@ public class GraphLID extends AbstractGraph{
 	
 	private static final String[] maoriNameStarts = {"A", "E", "H", "I", "K", "M", "N", "Ng", "O", "P", "R", "T", "U", "W", "Wh"};
 	private static final String[] englishNameStarts = {"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"};
+	private static final String[] samoanNameStarts = {"A", "E", "F", "H", "I", "K", "L", "M", "N", "O", "P", "R", "S", "T", "U", "V"};
+	private static final String[] genericNameStarts = {"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"};
 	
 	public GraphLID() {
 
@@ -82,6 +84,23 @@ public class GraphLID extends AbstractGraph{
 		return predictLanguage;
 			
 		
+	}
+	
+	public static Language getLanguageLeastNames() throws SQLException, ClassNotFoundException{
+		Language returnLanguage = Language.ENGLISH;
+		
+		DBManager dbm = new DBManager();
+		dbm.makeConnection();
+
+		int lowestNum = dbm.getNumNamesInLanguage(returnLanguage);
+		
+		for (Language lang : Language.values()) {
+			if (dbm.getNumNamesInLanguage(lang) < lowestNum) {
+				lowestNum = dbm.getNumNamesInLanguage(lang);
+				returnLanguage = lang;
+			}
+		}
+		return returnLanguage;
 	}
 	
 	public void parseName(String name, Language lang) {
@@ -154,6 +173,134 @@ public class GraphLID extends AbstractGraph{
 		return false;
 	}
 	
+	public boolean nameStartMatches(String curName, String curPhoneme) {
+		
+		if (curName.length() < curPhoneme.length()) return false;
+		for (int i = 0; i < curPhoneme.length(); i++) {
+
+			char nChar = curName.charAt(i);
+			char pChar = curPhoneme.charAt(i);
+			if (nChar != pChar) return false;
+			
+		}
+		return true;
+	}
+	
+	public double[] setNameFractions(Language lang, int numNameStarters, ArrayList<String> langNames, int trainingSize) {
+		
+		double[] nameFractions = new double[numNameStarters];
+		for (int i = 0; i < nameFractions.length; i++) nameFractions[i] = 0;
+		
+		int numNamesInLang = langNames.size();
+		
+		NamesIterationLoop:
+		for (int i = 0; i < numNamesInLang; i++) {
+			
+			String curName = langNames.get(i);
+			
+			NameStartIterationLoop:
+			for (int j = 0; j < numNameStarters; j++) {
+				
+				String curPhoneme = "";
+				if (lang == Language.ENGLISH) curPhoneme = GraphLID.englishNameStarts[j];
+				else if (lang == Language.MAORI) curPhoneme = GraphLID.maoriNameStarts[j];
+				else if (lang == Language.SAMOAN) curPhoneme = GraphLID.samoanNameStarts[j];
+				else curPhoneme = GraphLID.genericNameStarts[j];
+				
+				boolean nameStartMatches = this.nameStartMatches(curName, curPhoneme);
+				if (nameStartMatches) {
+					nameFractions[j] += 1.0;
+					break NameStartIterationLoop;
+				}
+				
+			}
+			
+		}
+		
+		for (int i = 0; i < nameFractions.length; i++) 
+			nameFractions[i] /= (double) langNames.size();
+		
+		return nameFractions;
+//		
+//		int[] phonemeNumber = new int[numNameStarters];
+//		
+//		for (int i = 0; i < numNameStarters; i++) {
+//			double temp_double = nameFractions[i] * (double)trainingSize;
+//			phonemeNumber[i] = (int)Math.round(temp_double);
+//		}
+		
+	}
+	
+	public static ArrayList<ArrayList<String>> selectTrainingNames(ArrayList<String> langNames, int[] phonemeNumber, String[] langNameStarts, Language lang) throws Exception{
+
+		ArrayList<ArrayList<String>> namesToUse = new ArrayList<>();
+		
+		int numPhonemeStarts = phonemeNumber.length;
+		
+		for (int i = 0; i < numPhonemeStarts; i++) {
+			ArrayList<String> namesFromPhoneme = GraphLID.makeRandomNameList(langNames, langNameStarts[i], phonemeNumber[i], lang);
+			namesToUse.add(namesFromPhoneme);
+		}
+		
+		return namesToUse;
+		
+	}
+	
+	public void trainAllLanguages() throws Exception{
+		for (Language lang : Language.values()) this.trainLanguage(lang);
+	}
+	
+	public void trainLanguage(Language lang) throws Exception{
+		
+		DBManager dbm = new DBManager();
+		dbm.makeConnection();
+		ArrayList<String> langNames = dbm.getNames(lang);
+		boolean isSmallestSampleLang = GraphLID.getLanguageLeastNames() == lang;
+		
+		int langNamesInDB = dbm.getNumNamesInLanguage(lang);
+		int numLangToTrain = dbm.getNumNamesInLanguage(GraphLID.getLanguageLeastNames()) / 2;
+		
+		int numNameStarters = GraphLID.genericNameStarts.length;
+		if (lang == Language.ENGLISH) numNameStarters = GraphLID.englishNameStarts.length;
+		else if (lang == Language.MAORI) numNameStarters = GraphLID.maoriNameStarts.length;
+		else if (lang == Language.SAMOAN) numNameStarters = GraphLID.samoanNameStarts.length;
+		
+		double[] nameFractions = new double[numNameStarters];
+		
+		int trainingSize = dbm.getTrainingSize();
+		
+		nameFractions = this.setNameFractions(lang, numNameStarters, langNames, trainingSize);
+		
+		int[] phonemeNumber = new int[numNameStarters];
+		for (int i = 0; i < nameFractions.length; i++) {
+			double temp_double = nameFractions[i] * trainingSize;
+			phonemeNumber[i] = (int)Math.round(temp_double);
+		}
+		
+		ArrayList<ArrayList<String>> namesToUse = new ArrayList<>();
+		String[] nameStart = new String[numNameStarters];
+		for (int i = 0; i < numNameStarters; i++) {
+			if (lang == Language.ENGLISH) nameStart[i] = GraphLID.englishNameStarts[i];
+			else if (lang == Language.MAORI) nameStart[i] = GraphLID.maoriNameStarts[i];
+			else if (lang == Language.SAMOAN) nameStart[i] = GraphLID.samoanNameStarts[i];
+		}
+		
+		namesToUse = GraphLID.selectTrainingNames(langNames, phonemeNumber, nameStart, lang);
+		
+		for (int i = 0; i < namesToUse.size(); i++) {
+			ArrayList<String> extractedNames = namesToUse.get(i);
+			for (int j = 0; j < extractedNames.size(); j++) {
+				
+				System.out.println("The name " + extractedNames.get(j) + " will be parsed for the language " + lang);
+				
+				this.parseName(extractedNames.get(j), lang);
+			}
+		}
+		
+		//TODO: finish this function
+		
+	}
+	
 	public static void main(String[] args) {
 	
 		//Pair<String, Language> data_element;
@@ -162,70 +309,75 @@ public class GraphLID extends AbstractGraph{
 		GraphLID testGraph = new GraphLID();
 		try {
 			dbm.makeConnection();
+		
+			testGraph.trainAllLanguages();
 			
 			for (Language lang : Language.values()) {
-				ArrayList<String> langNames = dbm.getNames(lang);
 				
-				if (lang == Language.MAORI) {
-					
-					int maoriLangNamesInDB = langNames.size();
-					int numMaoriNameStartPhonemes = GraphLID.maoriNameStarts.length;
-					double[] nameFractions = new double[numMaoriNameStartPhonemes];
-					
-					for (int i = 0; i < numMaoriNameStartPhonemes; i++) 
-						nameFractions[i] = 0;
-					
-					NamesIterateLoop:
-					for (int i = 0; i < maoriLangNamesInDB; i++) {
-						
-						String curName = langNames.get(i);
-						//Iterate through the different possible phonemes at start of 
-						//names. 
-						NameStartIterateLoop:
-						for (int j = 0; j < numMaoriNameStartPhonemes; j++) {
-							
-							String curPhoneme = GraphLID.maoriNameStarts[j];
-							
-							if (curPhoneme.length() == 1) {
-								if ( ( curName.charAt(0) == 'W' && curName.charAt(1) == 'h' ) || ( curName.charAt(0) == 'N' && curName.charAt(1) == 'g' ) ) continue NameStartIterateLoop; 
-								if (curPhoneme.charAt(0) == curName.charAt(0)) {
-									nameFractions[j] += 1.0;
-									break NameStartIterateLoop;
-								}
-							}
-							
-						}
-						
-					}
-					
-					for (int i = 0; i < numMaoriNameStartPhonemes; i++)
-						nameFractions[i] /= (double)maoriLangNamesInDB;
-					
-					//Now get number of Samoan names in DB
-					int samoanNameSize = dbm.getNumNamesInLanguage(Language.SAMOAN);
-					int[] phonemeNumber = new int[numMaoriNameStartPhonemes]; //This is the number of Maori names that will be used for each phoneme used to start a name
-					
-					for (int i = 0; i < numMaoriNameStartPhonemes; i++) 
-						phonemeNumber[i] = (int)Math.round(nameFractions[i] * (double)samoanNameSize);
-					
-					//Now make sets of random names that start with particular phonemes
-					
-					ArrayList<ArrayList<String>> namesToUse = new ArrayList<>();
-					for (int i = 0; i < numMaoriNameStartPhonemes; i++) {
-						namesToUse.add(GraphLID.makeRandomNameList(langNames, GraphLID.maoriNameStarts[i], phonemeNumber[i], lang));
-					}
-					
-					for(int i = 0; i < namesToUse.size(); i++) {
-						ArrayList<String> extractedList = namesToUse.get(i);
-						for (int j = 0; j < extractedList.size(); j++) testGraph.parseName(extractedList.get(j), lang);
-					}
-					
-				} else if (lang == Language.SAMOAN) {
-					
-					for (int i = 0; i < langNames.size(); i++)
-						testGraph.parseName(langNames.get(i), lang);
-					
-				}
+				
+				
+//				ArrayList<String> langNames = dbm.getNames(lang);
+//				
+//				if (lang == Language.MAORI) {
+//					
+//					int maoriLangNamesInDB = langNames.size();
+//					int numMaoriNameStartPhonemes = GraphLID.maoriNameStarts.length;
+//					double[] nameFractions = new double[numMaoriNameStartPhonemes];
+//					
+//					for (int i = 0; i < numMaoriNameStartPhonemes; i++) 
+//						nameFractions[i] = 0;
+//					
+//					NamesIterateLoop:
+//					for (int i = 0; i < maoriLangNamesInDB; i++) {
+//						
+//						String curName = langNames.get(i);
+//						//Iterate through the different possible phonemes at start of 
+//						//names. 
+//						NameStartIterateLoop:
+//						for (int j = 0; j < numMaoriNameStartPhonemes; j++) {
+//							
+//							String curPhoneme = GraphLID.maoriNameStarts[j];
+//							
+//							if (curPhoneme.length() == 1) {
+//								if ( ( curName.charAt(0) == 'W' && curName.charAt(1) == 'h' ) || ( curName.charAt(0) == 'N' && curName.charAt(1) == 'g' ) ) continue NameStartIterateLoop; 
+//								if (curPhoneme.charAt(0) == curName.charAt(0)) {
+//									nameFractions[j] += 1.0;
+//									break NameStartIterateLoop;
+//								}
+//							}
+//							
+//						}
+//						
+//					}
+//					
+//					for (int i = 0; i < numMaoriNameStartPhonemes; i++)
+//						nameFractions[i] /= (double)maoriLangNamesInDB;
+//					
+//					//Now get number of Samoan names in DB
+//					int samoanNameSize = dbm.getNumNamesInLanguage(Language.SAMOAN);
+//					int[] phonemeNumber = new int[numMaoriNameStartPhonemes]; //This is the number of Maori names that will be used for each phoneme used to start a name
+//					
+//					for (int i = 0; i < numMaoriNameStartPhonemes; i++) 
+//						phonemeNumber[i] = (int)Math.round(nameFractions[i] * (double)samoanNameSize);
+//					
+//					//Now make sets of random names that start with particular phonemes
+//					
+//					ArrayList<ArrayList<String>> namesToUse = new ArrayList<>();
+//					for (int i = 0; i < numMaoriNameStartPhonemes; i++) {
+//						namesToUse.add(GraphLID.makeRandomNameList(langNames, GraphLID.maoriNameStarts[i], phonemeNumber[i], lang));
+//					}
+//					
+//					for(int i = 0; i < namesToUse.size(); i++) {
+//						ArrayList<String> extractedList = namesToUse.get(i);
+//						for (int j = 0; j < extractedList.size(); j++) testGraph.parseName(extractedList.get(j), lang);
+//					}
+//					
+//				} else if (lang == Language.SAMOAN) {
+//					
+//					for (int i = 0; i < langNames.size(); i++)
+//						testGraph.parseName(langNames.get(i), lang);
+//					
+//				}
 				
 			}
 			
@@ -234,25 +386,25 @@ public class GraphLID extends AbstractGraph{
 			e.printStackTrace();
 		}
 		
-		for (int i = 0; i < testGraph.getNodeListSize(); i++) {
-			Node dispNode = testGraph.getNode(i);
-			System.out.println("Node '" + dispNode.getTrigram() + "' has the following language values: ");
-			for (Language lang : Language.values()) {
-				System.out.println("\t" + lang + ": " + dispNode.getLanguageValue(lang));
-			}
-			System.out.println("\n");
-		}
+//		for (int i = 0; i < testGraph.getNodeListSize(); i++) {
+//			Node dispNode = testGraph.getNode(i);
+//			System.out.println("Node '" + dispNode.getTrigram() + "' has the following language values: ");
+//			for (Language lang : Language.values()) {
+//				System.out.println("\t" + lang + ": " + dispNode.getLanguageValue(lang));
+//			}
+//			System.out.println("\n");
+//		}
 		
-		for (int i = 0; i < testGraph.getEdgeListSize(); i++) {
-			Edge dispEdge = testGraph.getEdge(i);
-			System.out.println("Edge from '" + dispEdge.getPastNodeTrigram() + 
-					"' to '" + dispEdge.getNextNodeTrigram() + " has the following "
-							+ "language values: ");
-			for (Language lang : Language.values()) {
-				System.out.println("\t" + lang + ": " + dispEdge.getLanguageValue(lang));
-			}
-			System.out.println("\n");
-		}
+//		for (int i = 0; i < testGraph.getEdgeListSize(); i++) {
+//			Edge dispEdge = testGraph.getEdge(i);
+//			System.out.println("Edge from '" + dispEdge.getPastNodeTrigram() + 
+//					"' to '" + dispEdge.getNextNodeTrigram() + " has the following "
+//							+ "language values: ");
+//			for (Language lang : Language.values()) {
+//				System.out.println("\t" + lang + ": " + dispEdge.getLanguageValue(lang));
+//			}
+//			System.out.println("\n");
+//		}
 		
 //		GraphLID testGraph = new GraphLID();
 //		testGraph.parseName("Yuuko", Language.JAPANESE);

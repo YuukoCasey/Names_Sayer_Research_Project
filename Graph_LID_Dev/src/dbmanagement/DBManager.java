@@ -155,4 +155,15 @@ public class DBManager implements DBManageable{
 		
 	}
 	
+	public int getTrainingSize() throws Exception{
+		int smallestLangNum = this.getNumNamesInLanguage(Language.ENGLISH);
+		for (Language lang : Language.values()) {
+			int temp = this.getNumNamesInLanguage(lang);
+			if (temp < smallestLangNum && temp > 0) 
+				smallestLangNum = temp;
+		}
+		smallestLangNum /= 2;
+		return smallestLangNum;
+	}
+	
 }
