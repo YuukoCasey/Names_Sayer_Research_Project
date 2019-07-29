@@ -668,12 +668,17 @@ public class GraphLID extends AbstractGraph{
 			TestResultManager trm = new TestResultManager();
 			trm.makeConnection();
 			
+			
 			for (int i = 1; i <= 1000; i++) {
+//				long startTime = System.nanoTime();
 				GraphLID testGraph = new GraphLID();
 				testGraph.initiateTrainedNamesHasMap();
 				testGraph.trainAllLanguages();
 				testGraph.testAllLanguages(i, trm);
 				System.out.println("Test " + i + " complete");
+//				long endTime = System.nanoTime();
+//				long resTime = (endTime-startTime)/1000000;
+//				System.out.println("Testing time taken is " + resTime + "ms");
 			}
 			
 			trm.closeConnection();
