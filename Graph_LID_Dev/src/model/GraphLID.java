@@ -7,6 +7,7 @@ import java.util.HashMap;
 import dbmanagement.DBManager;
 import java.util.Random;
 import java.sql.SQLException;
+import dbmanagement.TestResultManager;
 
 public class GraphLID extends AbstractGraph{
 
@@ -647,6 +648,9 @@ public class GraphLID extends AbstractGraph{
 		accuracyScore *= 100.0;
 		System.out.println("For the language " + lang + " the LID accuracy is " 
 				+ accuracyScore + "%");
+		
+		
+		
 	}
 	
 	public static void main(String[] args) {
@@ -658,7 +662,7 @@ public class GraphLID extends AbstractGraph{
 			dbm.makeConnection();
 		
 			testGraph.trainAllLanguages();
-			
+				
 			testGraph.testAllLanguages();
 			
 			dbm.closeConnection();
