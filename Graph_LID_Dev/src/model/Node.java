@@ -33,12 +33,12 @@ public class Node extends GraphFieldTemplate{
 	
 	public void setTrigram(String trigram) {
 		if (trigram.length() == 3) this.trigram = trigram;
-//		else {
-//			while (trigram.length() < 3) {
-//				trigram += " ";
-//			}
-//			this.trigram = trigram;
-//		}
+		else {
+			while (trigram.length() < 3) {
+				trigram += " ";
+			}
+			this.trigram = trigram;
+		}
 	}
 	
 //	public int getLangVal(Language lang) {

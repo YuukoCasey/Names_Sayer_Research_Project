@@ -607,15 +607,15 @@ public class GraphLID extends AbstractGraph{
 		
 	}
 	
-	public void testAllLanguages() throws Exception{
+	public void testAllLanguages(int testNum, TestResultManager trm) throws Exception{
 		
 		for (Language lang : Language.values()) {
-			this.testLanguage(lang);
+			this.testLanguage(lang, testNum, trm);
 		}
 		
 	}
 	
-	public void testLanguage(Language lang) throws Exception{
+	public void testLanguage(Language lang, int testNum, TestResultManager trm) throws Exception{
 		
 		DBManager dbm = new DBManager();
 		dbm.makeConnection();
@@ -646,25 +646,37 @@ public class GraphLID extends AbstractGraph{
 		}
 		accuracyScore /= (double)testNames.size();
 		accuracyScore *= 100.0;
-		System.out.println("For the language " + lang + " the LID accuracy is " 
-				+ accuracyScore + "%");
+//		System.out.println("For the language " + lang + " the LID accuracy is " 
+//				+ accuracyScore + "%");
 		
-		
-		
+
+		trm.insertEntryToDB(testNum, lang, accuracyScore);
+	
 	}
 	
 	public static void main(String[] args) {
 		
 		DBManager dbm = new DBManager();
-		GraphLID testGraph = new GraphLID();
-		testGraph.initiateTrainedNamesHasMap();
+//		GraphLID testGraph = new GraphLID();
+//		testGraph.initiateTrainedNamesHasMap();
 		try {
 			dbm.makeConnection();
 		
-			testGraph.trainAllLanguages();
+//			testGraph.trainAllLanguages();
 				
-			testGraph.testAllLanguages();
+//			testGraph.testAllLanguages();
+			TestResultManager trm = new TestResultManager();
+			trm.makeConnection();
 			
+			for (int i = 1; i <= 1000; i++) {
+				GraphLID testGraph = new GraphLID();
+				testGraph.initiateTrainedNamesHasMap();
+				testGraph.trainAllLanguages();
+				testGraph.testAllLanguages(i, trm);
+				System.out.println("Test " + i + " complete");
+			}
+			
+			trm.closeConnection();
 			dbm.closeConnection();
 		} catch (Exception e) {
 			e.printStackTrace();
