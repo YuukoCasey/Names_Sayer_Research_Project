@@ -13,13 +13,39 @@ public class GraphLID extends AbstractGraph{
 	private ArrayList<Node> graphNodes = new ArrayList<>();
 	private ArrayList<Edge> graphEdges = new ArrayList<>();
 	
+	private HashMap<Language, ArrayList<String>> trainedNames = new HashMap<>();
+	
 	private static final String[] maoriNameStarts = {"A", "E", "H", "I", "K", "M", "N", "Ng", "O", "P", "R", "T", "U", "W", "Wh"};
 	private static final String[] englishNameStarts = {"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"};
 	private static final String[] samoanNameStarts = {"A", "E", "F", "H", "I", "K", "L", "M", "N", "O", "P", "R", "S", "T", "U", "V"};
 	private static final String[] genericNameStarts = {"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"};
 	
 	public GraphLID() {
-
+		
+	}
+	
+	public void initiateTrainedNamesHasMap() {
+		for (Language lang : Language.values()) {
+			this.trainedNames.put(lang, new ArrayList<String>());
+		}
+	}
+	
+	public void addNameToTrainedData(Language lang, String name) {
+		ArrayList<String> curNames = this.getTrainedNamesForLanguage(lang);
+		
+		//Double-check that the name you will enter is not present
+		if (!curNames.contains(name)) {
+			curNames.add(name);
+		}
+		this.trainedNames.put(lang, curNames);
+	}
+	
+	public ArrayList<String> getTrainedNamesForLanguage(Language lang){
+		return this.trainedNames.get(lang);
+	}
+	
+	public HashMap<Language, ArrayList<String>> getAllTrainedNames(){
+		return this.trainedNames;
 	}
 	
 	public Language predictLanguage(String name) {
@@ -45,12 +71,12 @@ public class GraphLID extends AbstractGraph{
 				Node nodeJ = this.getNode(j);
 				if (nodeI.hasSameName(nodeJ)) {
 					
-					System.out.println("\nThe current trigram has been found in the graph");
-					System.out.println("The current trigram is " + nodeI.getTrigram());
+//					System.out.println("\nThe current trigram has been found in the graph");
+//					System.out.println("The current trigram is " + nodeI.getTrigram());
 					
 					for (Language lang : Language.values()) {
 						int langVal = nodeJ.getLangVal(lang);
-						if (langVal >= 1) System.out.println("This trigram has a " + lang + " value of " + langVal);
+//						if (langVal >= 1) System.out.println("This trigram has a " + lang + " value of " + langVal);
 						
 						nameGraph.increaseLangVal(lang, langVal);
 					}
@@ -87,6 +113,19 @@ public class GraphLID extends AbstractGraph{
 	}
 	
 	public static Language getLanguageLeastNames() throws SQLException, ClassNotFoundException{
+		
+		/****************************************************************
+		 *                                                              *
+		 * This function serves to find what language, among those that *
+		 * have been trained, has the lowest number of names in the     *
+		 * database.                                                    *
+		 *                                                              *
+		 * Inputs: none                                                 *
+		 *                                                              *
+		 * Output: Language that has the least names in the database    *
+		 *                                                              *
+		 ****************************************************************/
+		
 		Language returnLanguage = Language.ENGLISH;
 		
 		DBManager dbm = new DBManager();
@@ -104,7 +143,8 @@ public class GraphLID extends AbstractGraph{
 	}
 	
 	public void parseName(String name, Language lang) {
-		//This function will take a name and a language as inputs, and add them to the graph
+		//This function will take a name and a language as inputs, 
+		//and add them to the graph
 		
 		if (name.length() == 0) return;
 		
@@ -144,6 +184,24 @@ public class GraphLID extends AbstractGraph{
 	
 	public static ArrayList<String> makeRandomNameList(ArrayList<String> origList, String nameStart, int numNamesExtract, Language lang) throws Exception {
 		
+		/*******************************************************************************
+		 *                                                                             *
+		 * This function serves to make an ArrayList of names from the database, where *
+		 * a certain number of names are extracted and those names all start with a    *
+		 * certain string.                                                             *
+		 *                                                                             *
+		 * Inputs:                                                                     *
+		 * 	- An ArrayList from which names will be selected                           *
+		 * 	- A string that the start of names to use will start with                  *
+		 * 	- The number of names you want in the return ArrayList                     *
+		 * 	- The Language of the names you will return                                *
+		 *                                                                             *
+		 * Output:                                                                     *
+		 * 	A random ArrayList of names that start with a certain string for a certain *
+		 * 	language                                                                   *
+		 *                                                                             *
+		 *******************************************************************************/
+
 		ArrayList<String> returnList = new ArrayList<>();
 		DBManager dbm = new DBManager();
 		dbm.makeConnection();
@@ -169,7 +227,51 @@ public class GraphLID extends AbstractGraph{
 		
 	}
 	
+	public static ArrayList<String> makeRandomNameList(ArrayList<String> origList, String nameStart, int numNamesExtract, Language lang, ArrayList<String> usedNames) throws Exception{
+		
+		ArrayList<String> returnList = new ArrayList<>();
+		DBManager dbm = new DBManager();
+		dbm.makeConnection();
+		
+		ArrayList<String> nameStartList = dbm.getNamesStartString(nameStart, lang);
+		
+		for (int i = 0; i < numNamesExtract; i++) {
+			
+			//TODO: explain what this [articular line of code does
+			int randIndex = new Random().nextInt(nameStartList.size());
+			
+			String extractedName = nameStartList.get(randIndex);
+			boolean nameIsAlreadyUsed = GraphLID.stringInArrayList(returnList, extractedName);
+
+			if (!nameIsAlreadyUsed) {
+				nameIsAlreadyUsed = usedNames.contains(extractedName);
+				if (!nameIsAlreadyUsed) {
+					returnList.add(extractedName);
+				}
+			} else i--;
+			
+		}
+		
+		dbm.closeConnection();
+		return returnList;
+		
+	}
+	
 	public static boolean stringInArrayList(ArrayList<String> inputList, String inputStr) {
+		
+		/*******************************************************************************
+		 *                                                                             *
+		 * This function serves to see if a string is present in an ArrayList of       *
+		 * strings                                                                     *
+		 *                                                                             *
+		 * Inputs:                                                                     *
+		 * 	- The ArrayList that will be analysed                                      *
+		 * 	- The String to which ArrayList Strings will be compared                   *
+		 *                                                                             *
+		 * Output:                                                                     *
+		 * 	A boolean saying whether or not the ArrayList contains the searched String *
+		 *                                                                             *
+		 *******************************************************************************/
 		
 		for (int i = 0; i < inputList.size(); i++) {
 			if (inputList.get(i).equals(inputStr)) return true;
@@ -179,6 +281,20 @@ public class GraphLID extends AbstractGraph{
 	}
 	
 	public boolean nameStartMatches(String curName, String curPhoneme) {
+		
+		/********************************************************************
+		 *                                                                  *
+		 * This function serves to see whether or not a string starts with  *
+		 * a given sequence of letters                                      *
+		 *                                                                  *
+		 * Inputs:                                                          *
+		 * 	- The name (or string in general) that will be analysed         *
+		 * 	- The sequence of letters that will be searched for in the name *
+		 *                                                                  *
+		 * Output:                                                          *
+		 * 	A boolean of the answer                                         *
+		 *                                                                  *
+		 ********************************************************************/
 		
 		if (curName.length() < curPhoneme.length()) return false;
 		for (int i = 0; i < curPhoneme.length(); i++) {
@@ -192,6 +308,24 @@ public class GraphLID extends AbstractGraph{
 	}
 	
 	public double[] setNameFractions(Language lang, int numNameStarters, ArrayList<String> langNames, int trainingSize) {
+		
+		/******************************************************************************
+		 *                                                                            *
+		 * This function serves to find what percentage of names start with each      *
+		 * phoneme for a given language.                                              *
+		 *                                                                            *
+		 * Inputs:                                                                    *
+		 * 	- The language being used                                                 *
+		 * 	- The number of unique phonemes used to start names in the given language *
+		 * 	- An ArrayList of the names in the given language                         *
+		 * 	- The number of names that will be used for training each individual      *
+		 * 	  language                                                                *
+		 *                                                                            *
+		 * Outputs:                                                                   *
+		 * 	- An array of doubles, representing what percentage of names to be used   *
+		 * 	  will start with which phoneme                                           *
+		 *                                                                            *
+		 ******************************************************************************/
 		
 		double[] nameFractions = new double[numNameStarters];
 		for (int i = 0; i < nameFractions.length; i++) nameFractions[i] = 0;
@@ -226,18 +360,31 @@ public class GraphLID extends AbstractGraph{
 			nameFractions[i] /= (double) langNames.size();
 		
 		return nameFractions;
-//		
-//		int[] phonemeNumber = new int[numNameStarters];
-//		
-//		for (int i = 0; i < numNameStarters; i++) {
-//			double temp_double = nameFractions[i] * (double)trainingSize;
-//			phonemeNumber[i] = (int)Math.round(temp_double);
-//		}
 		
 	}
 	
 	public static ArrayList<ArrayList<String>> selectTrainingNames(ArrayList<String> langNames, int[] phonemeNumber, String[] langNameStarts, Language lang) throws Exception{
 
+		/*******************************************************************************
+		 *                                                                             *
+		 * This function serves to produce an ArrayList of ArrayLists,                 *
+		 * which each individually contain all the names that start with a certain     *
+		 * phoneme that will be used for training the Language Identification AI       *
+		 *                                                                             *
+		 * Inputs:                                                                     *
+		 * 	- An ArrayList of all the names from a language in a database              *
+		 * 	- An Array of the number of names that will need to start with each        *
+		 * 	  particular phoneme                                                       *
+		 * 	- An Array of all the phonemes with which names can start with for a given *
+		 * 	  language                                                                 *
+		 * 	- The Language for which the AI is being trained to recognise              *
+		 *                                                                             *
+		 * Output:                                                                     *
+		 * 	An ArrayList of ArrayLists, overall containing all the names that will be  *
+		 * 	used to train the AI                                                       *
+		 *                                                                             *
+		 *******************************************************************************/
+		
 		ArrayList<ArrayList<String>> namesToUse = new ArrayList<>();
 		
 		int numPhonemeStarts = phonemeNumber.length;
@@ -251,24 +398,45 @@ public class GraphLID extends AbstractGraph{
 		
 	}
 	
+	public ArrayList<ArrayList<String>> selectTestingNames(ArrayList<String> langNames, int[] phonemeNumber, String[] langNameStarts, Language lang) throws Exception{
+		
+		ArrayList<String> usedNames = this.getTrainedNamesForLanguage(lang);
+		
+		ArrayList<ArrayList<String>> namesToUse = new ArrayList<>();
+		
+		int numPhonemeStarts = phonemeNumber.length;
+		
+		for (int i = 0; i < numPhonemeStarts; i++) {
+			ArrayList<String> namesFromPhoneme = GraphLID.makeRandomNameList(langNames, langNameStarts[i], phonemeNumber[i], lang, usedNames);
+			namesToUse.add(namesFromPhoneme);
+		}
+		
+		return namesToUse;
+	}
+	
 	public void trainAllLanguages() throws Exception{
+		
+		/******************************************************************
+		 *                                                                *
+		 * This function serves to train the AI to identify the language  *
+		 * of all languages for which there is data on words and/or names *
+		 * in a database                                                  *
+		 *                                                                *
+		 * Inputs: None                                                   *
+		 *                                                                *
+		 * Output: None                                                   *
+		 *                                                                *
+		 ******************************************************************/
+		
 		for (Language lang : Language.values()) this.trainLanguage(lang);
 	}
 	
-	public void trainLanguage(Language lang) throws Exception{
+	public int[] getNumberOfNamesToUse(Language lang, ArrayList<String> langNames) throws Exception{
 		
 		DBManager dbm = new DBManager();
 		dbm.makeConnection();
-		ArrayList<String> langNames = dbm.getNames(lang);
-//		boolean isSmallestSampleLang = GraphLID.getLanguageLeastNames() == lang;
 		
-//		int langNamesInDB = dbm.getNumNamesInLanguage(lang);
-//		int numLangToTrain = dbm.getNumNamesInLanguage(GraphLID.getLanguageLeastNames()) / 2;
-		
-		int numNameStarters = GraphLID.genericNameStarts.length;
-		if (lang == Language.ENGLISH) numNameStarters = GraphLID.englishNameStarts.length;
-		else if (lang == Language.MAORI) numNameStarters = GraphLID.maoriNameStarts.length;
-		else if (lang == Language.SAMOAN) numNameStarters = GraphLID.samoanNameStarts.length;
+		int numNameStarters = this.getNumNameStarters(lang);
 		
 		double[] nameFractions = new double[numNameStarters];
 		
@@ -281,301 +449,238 @@ public class GraphLID extends AbstractGraph{
 			double temp_double = nameFractions[i] * trainingSize;
 			phonemeNumber[i] = (int)Math.round(temp_double);
 			
-			/* CODE FOR DEBUGGING STARTS */
-			
-//			if (lang == Language.ENGLISH) {
-//				System.out.println("The phoneme number for the letter " 
-//						+ GraphLID.englishNameStarts[i] + " is " + phonemeNumber[i]);
-//				
-//			}
-			//Result: only 8 English names that start with the letter 'A' should be parsed
-			
-			/* CODE FOR DEBUGGING ENDS */
-			
 		}
+		dbm.closeConnection();
+		return phonemeNumber;
+	}
+	
+	public int getNumNameStarters(Language lang) {
+		
+		int numNameStarters = GraphLID.genericNameStarts.length;
+		if (lang == Language.ENGLISH) numNameStarters = GraphLID.englishNameStarts.length;
+		else if (lang == Language.MAORI) numNameStarters = GraphLID.maoriNameStarts.length;
+		else if (lang == Language.SAMOAN) numNameStarters = GraphLID.samoanNameStarts.length;
+
+		return numNameStarters;
+	}
+	
+	public static String[] getNameStarters(Language lang) {
+		
+		if (lang.equals(Language.MAORI)) {
+			return GraphLID.maoriNameStarts;
+		} else if (lang.equals(Language.SAMOAN)) {
+			return GraphLID.samoanNameStarts;
+		}
+		return GraphLID.englishNameStarts;
+		
+	}
+	
+	public void trainLanguage(Language lang) throws Exception{
+		
+		/*********************************************************
+		 *                                                       *
+		 * This function serves to train the AI to be able to    *
+		 * recognise if a name is from this certain language     *
+		 *                                                       *
+		 * Input:                                                *
+		 * 	- The language you wish to train the AI to recognise *
+		 *                                                       *
+		 * Output: None                                          *
+		 *                                                       *
+		 *********************************************************/
+		
+		DBManager dbm = new DBManager();
+		dbm.makeConnection();
+		ArrayList<String> langNames = dbm.getNames(lang);
+		
+		int[] phonemeNumber = this.getNumberOfNamesToUse(lang, langNames);
+		int numNameStarters = this.getNumNameStarters(lang);
+		
+
+//		String[] nameStart = new String[numNameStarters];
+//		for (int i = 0; i < numNameStarters; i++) {
+//			if (lang == Language.ENGLISH) nameStart[i] = GraphLID.englishNameStarts[i];
+//			else if (lang == Language.MAORI) nameStart[i] = GraphLID.maoriNameStarts[i];
+//			else if (lang == Language.SAMOAN) nameStart[i] = GraphLID.samoanNameStarts[i];
+//		}
+		String[] nameStart = GraphLID.getNameStarters(lang);
 		
 		ArrayList<ArrayList<String>> namesToUse = new ArrayList<>();
-		String[] nameStart = new String[numNameStarters];
-		for (int i = 0; i < numNameStarters; i++) {
-			if (lang == Language.ENGLISH) nameStart[i] = GraphLID.englishNameStarts[i];
-			else if (lang == Language.MAORI) nameStart[i] = GraphLID.maoriNameStarts[i];
-			else if (lang == Language.SAMOAN) nameStart[i] = GraphLID.samoanNameStarts[i];
-		}
-		
 		namesToUse = GraphLID.selectTrainingNames(langNames, phonemeNumber, nameStart, lang);
 		
 		for (int i = 0; i < namesToUse.size(); i++) {
 			ArrayList<String> extractedNames = namesToUse.get(i);
 			
-			/* CODE FOR DEBUGGING STARTS HERE */
-			if (lang == Language.ENGLISH) {
-				System.out.println("\n\nNumber of names that start with the letter " + 
-				GraphLID.englishNameStarts[i] + " is " + extractedNames.size() + "\n\n"); 
-			}
-			/* CODE FOR DEBUGGING ENDS HERE */
-			
 			for (int j = 0; j < extractedNames.size(); j++) {
 				
-				System.out.println("The name " + extractedNames.get(j) + " will be parsed for the language " + lang);
+//				System.out.println("The name " + extractedNames.get(j) + " will be parsed for the language " + lang);
 				
-				this.parseName(extractedNames.get(j), lang);
+				String currentName = extractedNames.get(j);
+				this.addNameToTrainedData(lang, currentName);
+				
+				this.parseName(currentName, lang);
 			}
 		}
 		
-		//TODO: finish this function - finished but needs debugging
+	}
+	
+	public static int returnLongestPhonemeIndex(Language lang) {
+		
+		/**********************************************************
+		 *                                                        *
+		 * This function serves to find the longest name starting *
+		 * phoneme for a language and return it's index           *
+		 *                                                        *
+		 *********************************************************/
+		
+		int returnValue = 0;
+		
+		if (lang == Language.ENGLISH)
+			returnValue = GraphLID.returnLongestPhonemeIndex(englishNameStarts);
+		else if (lang == Language.MAORI)
+			returnValue = GraphLID.returnLongestPhonemeIndex(maoriNameStarts);
+		else if (lang == Language.SAMOAN)
+			returnValue = GraphLID.returnLongestPhonemeIndex(samoanNameStarts);
+		
+		return returnValue;
 		
 	}
 	
-	public static void main(String[] args) {
+	public static int returnLongestPhonemeIndex(String[] str_array) {
+		
+		/****************************************************************
+		 *                                                              *
+		 * This function serves to find the longest (in terms of        *
+		 * ASCII characters) phoneme used to start names in a given     *
+		 * language. This function effectively finds the longest String *
+		 * int an Array of Strings                                      *
+		 *                                                              *
+		 * Input:                                                       *
+		 * 	An Array of strings used to start names                     *
+		 *                                                              *
+		 * Output:                                                      *
+		 * 	An Integer representing the index of the longest string in  *
+		 * 	the input Array                                             *
+		 *                                                              *
+		 ****************************************************************/
+		
+		int returnValue = 0;
+		
+		for (int i = 1; i < str_array.length; i++) {
+			if (str_array[i].length() > str_array[returnValue].length())
+				returnValue = i;
+		}
+		
+		return returnValue;
+		
+	}
 	
-		//Pair<String, Language> data_element;
+	public static int getLongestPhonemeLength(Language lang) {
+		
+		/*************************************************************
+		 *                                                           *
+		 * This function serves to return the length of the longest  *
+		 * phoneme used to start names in a language.                *
+		 *                                                           *
+		 * Inputs:                                                   *
+		 * 	The language for which you wish to find the longest      *
+		 *  name-starting phoneme.                                   *
+		 *                                                           *
+		 * Output:                                                   *
+		 *  An Integer that is the length of the longest string used *
+		 *  to represent phonemes used at the start of names         *
+		 *                                                           *
+		 *************************************************************/
+		
+		int returnValue = 0;
+		
+		int returnIndex = GraphLID.returnLongestPhonemeIndex(lang);
+		if (lang == Language.ENGLISH)
+			returnValue = GraphLID.englishNameStarts[returnIndex].length();
+		else if (lang == Language.MAORI)
+			returnValue = GraphLID.maoriNameStarts[returnIndex].length();
+		else if (lang == Language.SAMOAN)
+			returnValue = GraphLID.samoanNameStarts[returnIndex].length();
+		
+		return returnValue;
+		
+	}
+	
+	public void testAllLanguages() throws Exception{
+		
+		for (Language lang : Language.values()) {
+			this.testLanguage(lang);
+		}
+		
+	}
+	
+	public void testLanguage(Language lang) throws Exception{
+		
+		DBManager dbm = new DBManager();
+		dbm.makeConnection();
+		ArrayList<String> langNames = dbm.getNames(lang);
+		
+		int[] phonemeNumber = this.getNumberOfNamesToUse(lang, langNames);
+		int numNameStarters = this.getNumNameStarters(lang);
+		
+		String[] nameStart = GraphLID.getNameStarters(lang);
+		
+		ArrayList<ArrayList<String>> namesToUse = this.selectTestingNames(langNames, phonemeNumber, nameStart, lang);
+		
+		ArrayList<String> testNames = new ArrayList<>();
+		for (int i = 0; i < namesToUse.size(); i++) {
+			for (int j = 0; j < namesToUse.get(i).size(); j++) {
+				testNames.add(namesToUse.get(i).get(j));
+			}
+		}
+		
+		//Now for the actual testing of the LID method
+		double accuracyScore = 0.0;
+		for (int i = 0; i < testNames.size(); i++) {
+			String curName = testNames.get(i);
+			Language testLang = this.predictLanguage(curName);
+			if (testLang.equals(lang)) {
+				accuracyScore += 1.0;
+			}
+		}
+		accuracyScore /= (double)testNames.size();
+		accuracyScore *= 100.0;
+		System.out.println("For the language " + lang + " the LID accuracy is " 
+				+ accuracyScore + "%");
+	}
+	
+	public static void main(String[] args) {
 		
 		DBManager dbm = new DBManager();
 		GraphLID testGraph = new GraphLID();
+		testGraph.initiateTrainedNamesHasMap();
 		try {
 			dbm.makeConnection();
 		
 			testGraph.trainAllLanguages();
 			
-			for (Language lang : Language.values()) {
-				
-//				ArrayList<String> langNames = dbm.getNames(lang);
-//				
-//				if (lang == Language.MAORI) {
-//					
-//					int maoriLangNamesInDB = langNames.size();
-//					int numMaoriNameStartPhonemes = GraphLID.maoriNameStarts.length;
-//					double[] nameFractions = new double[numMaoriNameStartPhonemes];
-//					
-//					for (int i = 0; i < numMaoriNameStartPhonemes; i++) 
-//						nameFractions[i] = 0;
-//					
-//					NamesIterateLoop:
-//					for (int i = 0; i < maoriLangNamesInDB; i++) {
-//						
-//						String curName = langNames.get(i);
-//						//Iterate through the different possible phonemes at start of 
-//						//names. 
-//						NameStartIterateLoop:
-//						for (int j = 0; j < numMaoriNameStartPhonemes; j++) {
-//							
-//							String curPhoneme = GraphLID.maoriNameStarts[j];
-//							
-//							if (curPhoneme.length() == 1) {
-//								if ( ( curName.charAt(0) == 'W' && curName.charAt(1) == 'h' ) || ( curName.charAt(0) == 'N' && curName.charAt(1) == 'g' ) ) continue NameStartIterateLoop; 
-//								if (curPhoneme.charAt(0) == curName.charAt(0)) {
-//									nameFractions[j] += 1.0;
-//									break NameStartIterateLoop;
-//								}
-//							}
-//							
-//						}
-//						
-//					}
-//					
-//					for (int i = 0; i < numMaoriNameStartPhonemes; i++)
-//						nameFractions[i] /= (double)maoriLangNamesInDB;
-//					
-//					//Now get number of Samoan names in DB
-//					int samoanNameSize = dbm.getNumNamesInLanguage(Language.SAMOAN);
-//					int[] phonemeNumber = new int[numMaoriNameStartPhonemes]; //This is the number of Maori names that will be used for each phoneme used to start a name
-//					
-//					for (int i = 0; i < numMaoriNameStartPhonemes; i++) 
-//						phonemeNumber[i] = (int)Math.round(nameFractions[i] * (double)samoanNameSize);
-//					
-//					//Now make sets of random names that start with particular phonemes
-//					
-//					ArrayList<ArrayList<String>> namesToUse = new ArrayList<>();
-//					for (int i = 0; i < numMaoriNameStartPhonemes; i++) {
-//						namesToUse.add(GraphLID.makeRandomNameList(langNames, GraphLID.maoriNameStarts[i], phonemeNumber[i], lang));
-//					}
-//					
-//					for(int i = 0; i < namesToUse.size(); i++) {
-//						ArrayList<String> extractedList = namesToUse.get(i);
-//						for (int j = 0; j < extractedList.size(); j++) testGraph.parseName(extractedList.get(j), lang);
-//					}
-//					
-//				} else if (lang == Language.SAMOAN) {
-//					
-//					for (int i = 0; i < langNames.size(); i++)
-//						testGraph.parseName(langNames.get(i), lang);
-//					
-//				}
-				
-			}
+			testGraph.testAllLanguages();
 			
 			dbm.closeConnection();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		
-//		for (int i = 0; i < testGraph.getNodeListSize(); i++) {
-//			Node dispNode = testGraph.getNode(i);
-//			System.out.println("Node '" + dispNode.getTrigram() + "' has the following language values: ");
-//			for (Language lang : Language.values()) {
-//				System.out.println("\t" + lang + ": " + dispNode.getLanguageValue(lang));
-//			}
-//			System.out.println("\n");
-//		}
 		
-//		for (int i = 0; i < testGraph.getEdgeListSize(); i++) {
-//			Edge dispEdge = testGraph.getEdge(i);
-//			System.out.println("Edge from '" + dispEdge.getPastNodeTrigram() + 
-//					"' to '" + dispEdge.getNextNodeTrigram() + " has the following "
-//							+ "language values: ");
-//			for (Language lang : Language.values()) {
-//				System.out.println("\t" + lang + ": " + dispEdge.getLanguageValue(lang));
-//			}
-//			System.out.println("\n");
-//		}
-		
-//		GraphLID testGraph = new GraphLID();
-//		testGraph.parseName("Yuuko", Language.JAPANESE);
-//		testGraph.parseName("Yumika", Language.JAPANESE);
-//		testGraph.parseName("Yuu", Language.JAPANESE);		
-//		testGraph.parseName("Takayama", Language.JAPANESE);
-//		testGraph.parseName("Takahashi", Language.JAPANESE);
-//		testGraph.parseName("Takahara", Language.JAPANESE);
-//		testGraph.parseName("Uehara", Language.JAPANESE);
-//		testGraph.parseName("Matsuyama", Language.JAPANESE);
-//		testGraph.parseName("Tretiakova", Language.RUSSIAN);
-//		testGraph.parseName("Tchaikovsky", Language.RUSSIAN);
-//		testGraph.parseName("Piotr", Language.RUSSIAN);
-//		testGraph.parseName("Gagarin", Language.RUSSIAN);
-//		testGraph.parseName("Junko", Language.JAPANESE);
-//		testGraph.parseName("Ayaka", Language.JAPANESE);
-//		testGraph.parseName("Taiki", Language.JAPANESE);
-//		testGraph.parseName("Itadani", Language.JAPANESE);
-//		testGraph.parseName("Risako", Language.JAPANESE);
-//		testGraph.parseName("Tatsuya", Language.JAPANESE);
-//		testGraph.parseName("Aiko", Language.JAPANESE);
-//		testGraph.parseName("Akane", Language.JAPANESE);
-//		testGraph.parseName("Kana", Language.JAPANESE);
-//		testGraph.parseName("Aoi", Language.JAPANESE);
-//		testGraph.parseName("Asuka", Language.JAPANESE);
-//		testGraph.parseName("Chiaki", Language.JAPANESE);
-//		testGraph.parseName("Hanako", Language.JAPANESE);
-//		testGraph.parseName("Haruko", Language.JAPANESE);
-//		testGraph.parseName("Hikari", Language.JAPANESE);
-//		testGraph.parseName("Hikaru", Language.JAPANESE);
-//		testGraph.parseName("Hitomi", Language.JAPANESE);
-//		testGraph.parseName("Katsumi", Language.JAPANESE);
-//		testGraph.parseName("Kotone", Language.JAPANESE);
-//		testGraph.parseName("Kyoko", Language.JAPANESE);
-//		testGraph.parseName("Midori", Language.JAPANESE);
-//		testGraph.parseName("Miyako", Language.JAPANESE);
-//		testGraph.parseName("Momoko", Language.JAPANESE);
-//		testGraph.parseName("Nanapeko", Language.JAPANESE);
-//		testGraph.parseName("Nanako", Language.JAPANESE);
-//		testGraph.parseName("Naomi", Language.JAPANESE);
-//		testGraph.parseName("Natsuko", Language.JAPANESE);
-//		testGraph.parseName("Haruna", Language.JAPANESE);
-//		testGraph.parseName("Ono", Language.JAPANESE);
-//		testGraph.parseName("Tomomi", Language.JAPANESE);
-//		testGraph.parseName("Ogawa", Language.JAPANESE);
-//		testGraph.parseName("Rina", Language.JAPANESE);
-//		testGraph.parseName("Suzuki", Language.JAPANESE);
-//		testGraph.parseName("Mami", Language.JAPANESE);
-//		testGraph.parseName("Sasazaki", Language.JAPANESE);
-//		testGraph.parseName("Suzuhana", Language.JAPANESE);
+//		int nodeListSize = testGraph.getNodeListSize();
+//		int edgeListSize = testGraph.getEdgeListSize();
+//		System.out.println("Number of nodes is " + nodeListSize);
+//		System.out.println("Number of edges is " + edgeListSize + "\n");
 //		
-//		testGraph.parseName("Abakumov", Language.RUSSIAN);
-//		testGraph.parseName("Abdulov", Language.RUSSIAN);
-//		testGraph.parseName("Abramov", Language.RUSSIAN);
-//		testGraph.parseName("Abramovich", Language.RUSSIAN);
-//		testGraph.parseName("Astakhov", Language.RUSSIAN);
-//		testGraph.parseName("Aslanov", Language.RUSSIAN);
-//		testGraph.parseName("Baskin", Language.RUSSIAN);
-//		testGraph.parseName("Bebchuk", Language.RUSSIAN);
-//		testGraph.parseName("Bebchuk", Language.RUSSIAN);
-//		testGraph.parseName("Bezrukov", Language.RUSSIAN);
-//		testGraph.parseName("Bezrodny", Language.RUSSIAN);
-//		testGraph.parseName("Belyakov", Language.RUSSIAN);
-//		testGraph.parseName("Bogomalov", Language.RUSSIAN);
-//		testGraph.parseName("Bryzgalov", Language.RUSSIAN);
-//		testGraph.parseName("Vikhrov", Language.RUSSIAN);
-//		testGraph.parseName("Vinogradov", Language.RUSSIAN);
-//		testGraph.parseName("Vedenin", Language.RUSSIAN);
-//		testGraph.parseName("Vavilov", Language.RUSSIAN);
-//		testGraph.parseName("Vorontsov", Language.RUSSIAN);
-//		testGraph.parseName("Romanova", Language.RUSSIAN);
-//		testGraph.parseName("Vasilevsky", Language.RUSSIAN);
-//		testGraph.parseName("Voskoboynikov", Language.RUSSIAN);
-//		testGraph.parseName("Voskresensky", Language.RUSSIAN);
-//		testGraph.parseName("Goncharov", Language.RUSSIAN);
-//		testGraph.parseName("Glazkov", Language.RUSSIAN);
-//		testGraph.parseName("Golubtsov", Language.RUSSIAN);
-//		testGraph.parseName("Glukhov", Language.RUSSIAN);
-//		testGraph.parseName("Gorbachyov", Language.RUSSIAN);
-//		testGraph.parseName("Grebenshchikov", Language.RUSSIAN);
-//		testGraph.parseName("Gurkovsky", Language.RUSSIAN);
-//		testGraph.parseName("Gruzinsky", Language.RUSSIAN);
+//		Language testLanguage = testGraph.predictLanguage("Mata");
+//		System.out.println("The most likely language for 'Mata' is " + testLanguage + "\n");
+//		testLanguage = testGraph.predictLanguage("Fetuao");
+//		System.out.println("The most likely language for 'Fetuao' is " + testLanguage + "\n");
 //		
-//		testGraph.parseName("Abby", Language.ENGLISH);
-//		testGraph.parseName("Alicia", Language.ENGLISH);
-//		testGraph.parseName("Alex", Language.ENGLISH);
-//		testGraph.parseName("Ashley", Language.ENGLISH);
-//		testGraph.parseName("Ariel", Language.ENGLISH);
-//		testGraph.parseName("Bailey", Language.ENGLISH);
-//		testGraph.parseName("Blair", Language.ENGLISH);
-//		testGraph.parseName("Bobby", Language.ENGLISH);
-//		testGraph.parseName("Brett", Language.ENGLISH);
-//		testGraph.parseName("Bronte", Language.ENGLISH);
-//		testGraph.parseName("Brooklyn", Language.ENGLISH);
-//		testGraph.parseName("Bryn", Language.ENGLISH);
-//		testGraph.parseName("Cadence", Language.ENGLISH);
-//		testGraph.parseName("Cameron", Language.ENGLISH);
-//		testGraph.parseName("Cecil", Language.ENGLISH);
-//		testGraph.parseName("Colby", Language.ENGLISH);
-//		testGraph.parseName("Courtney", Language.ENGLISH);
-//		testGraph.parseName("Cole", Language.ENGLISH);
-//		testGraph.parseName("Dakota", Language.ENGLISH);
-//		testGraph.parseName("Dana", Language.ENGLISH);
-//		testGraph.parseName("Darian", Language.ENGLISH);
-//		testGraph.parseName("Darnell", Language.ENGLISH);
-//		testGraph.parseName("Darryl", Language.ENGLISH);
-//		testGraph.parseName("Devin", Language.ENGLISH);
-//		testGraph.parseName("Dustin", Language.ENGLISH);
-//		testGraph.parseName("Elis", Language.ENGLISH);
-//		testGraph.parseName("Elliot", Language.ENGLISH);
-//		testGraph.parseName("Emerson", Language.ENGLISH);
-//		testGraph.parseName("Emery", Language.ENGLISH);
-//		testGraph.parseName("Evan", Language.ENGLISH);
-//		testGraph.parseName("Evelyn", Language.ENGLISH);
-//		testGraph.parseName("Fay", Language.ENGLISH);
-//		testGraph.parseName("Finley", Language.ENGLISH);
-//		testGraph.parseName("Finn", Language.ENGLISH);
-//		testGraph.parseName("Florence", Language.ENGLISH);
-//		testGraph.parseName("Garnet", Language.ENGLISH);
-//		testGraph.parseName("Gay", Language.ENGLISH);
-//		testGraph.parseName("Gayle", Language.ENGLISH);
-//		testGraph.parseName("Hayden", Language.ENGLISH);
-//		testGraph.parseName("Hayley", Language.ENGLISH);
-//		testGraph.parseName("Heaven", Language.ENGLISH);
-//		testGraph.parseName("Hilary", Language.ENGLISH);
-//		testGraph.parseName("Hillary", Language.ENGLISH);
-//		testGraph.parseName("Hope", Language.ENGLISH);
-//		testGraph.parseName("Ivy", Language.ENGLISH);
-//		
-		int nodeListSize = testGraph.getNodeListSize();
-		int edgeListSize = testGraph.getEdgeListSize();
-		System.out.println("Number of nodes is " + nodeListSize);
-		System.out.println("Number of edges is " + edgeListSize + "\n");
-		
-		Language testLanguage = testGraph.predictLanguage("Mata");
-		System.out.println("The most likely language for 'Mata' is " + testLanguage + "\n");
-		testLanguage = testGraph.predictLanguage("Fetuao");
-		System.out.println("The most likely language for 'Fetuao' is " + testLanguage + "\n");
-		
-//		Language kanakoLanguage = testGraph.predictLanguage("Kanako");
-//		
-//		System.out.println("The language of origin for the name 'Kanako' was tested");
-//		System.out.println("'Kanako' is a " + kanakoLanguage + " name");
-//		
-//		Language fedoseyev = testGraph.predictLanguage("Fedoseyev");
-//		
-//		System.out.println("The language of origin for the name 'Fedoseyev' was tested");
-//		System.out.println("'Fedoseyev' is a " + fedoseyev + " name");
+//		testLanguage = testGraph.predictLanguage("Maxwell");
+//		System.out.println("The most likely language for 'Maxwell' is " + testLanguage + "\n");
+//		testLanguage = testGraph.predictLanguage("Aileen");
+//		System.out.println("The most likely language for 'Aileen' is " + testLanguage + "\n");
 		
 		
 		

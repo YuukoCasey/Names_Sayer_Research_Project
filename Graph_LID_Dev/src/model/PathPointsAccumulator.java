@@ -55,10 +55,10 @@ public class PathPointsAccumulator extends AbstractGraph{
 	public Language getMostLikelyLanguage() {
 		Language returnLang = Language.ENGLISH;
 		int langVal = 0;
-		System.out.println("\n\nThe name '" + this.name + "' has the following language values");
+//		System.out.println("\n\nThe name '" + this.name + "' has the following language values");
 		for (Language lang : Language.values()) {
 			int newLangVal = this.getLangVal(lang);
-			System.out.println(lang + " : " + newLangVal);
+//			System.out.println(lang + " : " + newLangVal);
 			if (newLangVal > langVal) {
 				langVal = newLangVal;
 				returnLang = lang;

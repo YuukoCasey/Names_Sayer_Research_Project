@@ -25,8 +25,20 @@ public class Node extends GraphFieldTemplate{
 		for (Language lang : Language.values()) langWeights.put(lang, 0);
 	}
 	
+	public void displayFeatures() {
+		
+		System.out.println("DISPLAYING THE FEATURES OF A NODE");
+		System.out.println("Trigram is " + this.trigram);
+	}
+	
 	public void setTrigram(String trigram) {
 		if (trigram.length() == 3) this.trigram = trigram;
+		else {
+			while (trigram.length() < 3) {
+				trigram += " ";
+			}
+			this.trigram = trigram;
+		}
 	}
 	
 //	public int getLangVal(Language lang) {
@@ -42,6 +54,15 @@ public class Node extends GraphFieldTemplate{
 	}
 	
 	public boolean hasSameName(Node node) {
+		
+//		//Display features of this node
+//		this.displayFeatures();
+//		
+//		//Display features of input node
+//		node.displayFeatures();
+//		
+//		System.out.println();
+		
 		if (this.trigram.equals(node.getTrigram())) return true;
 		return false;
 	}

@@ -12,9 +12,16 @@ import java.util.ArrayList;
 
 public class DBManager implements DBManageable{
 
-	private Connection conn;
+	private Connection conn; //The object's connection to a database
 	
 	public void makeConnection() throws SQLException, ClassNotFoundException {
+		
+		/**********************************************************************
+		 *                                                                    *
+		 * This function serves to make this object connect to the NamesDB.db *
+		 * database                                                           *
+		 *                                                                    *
+		 **********************************************************************/
 		
 		Class.forName("org.sqlite.JDBC");
 		this.conn = DriverManager.getConnection("jdbc:sqlite:NamesDB.db");
@@ -22,10 +29,24 @@ public class DBManager implements DBManageable{
 	}
 	
 	public void closeConnection() throws SQLException {
+		
+		/*************************************************************
+		 *                                                           *
+		 * This function is used to close a connection to NamesDB.db *
+		 *                                                           *
+		 *************************************************************/
+		
 		this.conn.close();
 	}
 	
 	public boolean nameExists(String name) throws SQLException{
+		
+		/******************************************************************
+		 *                                                                *
+		 * This function serves to check whether or not a name is already *
+		 * in the NamesDB.db database                                     *
+		 *                                                                *
+		 ******************************************************************/
 		
 		PreparedStatement prep = this.conn.prepareStatement("SELECT name FROM names WHERE name=?");
 		prep.setString(1, name);
@@ -37,13 +58,25 @@ public class DBManager implements DBManageable{
 			
 			String res_name = rs.getString("name");
 			if (res_name == name) return true;
-			//System.out.println(res_name);
 		}
 		return false;
 		
 	}
 	
 	public ArrayList<String> getNames(Language lang) throws SQLException{
+		
+		/*************************************************************
+		 *                                                           *
+		 * This function serves to retrieve every name stored in the *
+		 * NamesDB.db database for a given language                  *
+		 *                                                           *
+		 * Input:                                                    *
+		 * 	The language for which you wish to retrieve all names    *
+		 *                                                           *
+		 * Output:                                                   *
+		 *  An ArrayList of all names for a given language           *
+		 *                                                           *
+		 *************************************************************/
 		
 		String search_lang = "English";
 		
@@ -68,6 +101,19 @@ public class DBManager implements DBManageable{
 	
 	public ArrayList<Language> getLanguages(String name) throws SQLException{
 		
+		/**********************************************************************
+		 *                                                                    *
+		 * This function serves to retrieve a list of all languages for which *
+		 * the database has a given name stored                               *
+		 *                                                                    *
+		 * Input:                                                             *
+		 * 	A name you are searching for in the database                      *
+		 *                                                                    *
+		 * Output:                                                            *
+		 * 	A list of the languages for which this name has been stored       *
+		 *                                                                    *
+		 **********************************************************************/
+		
 		PreparedStatement prep = this.conn.prepareStatement("SELECT language FROM names WHERE name=?");
 		prep.setString(1, name);
 		ResultSet rs = prep.executeQuery();
@@ -88,6 +134,13 @@ public class DBManager implements DBManageable{
 	
 	public void viewTable() throws SQLException{
 		
+		/**********************************************************************
+		 *                                                                    *
+		 * Sources aside, this function serves to display all the data in the *
+		 * names table of NamesDB.db                                          *
+		 *                                                                    *
+		 **********************************************************************/
+		
 		PreparedStatement prep = this.conn.prepareStatement("SELECT * FROM names");
 		ResultSet rs = prep.executeQuery();
 		
@@ -98,6 +151,13 @@ public class DBManager implements DBManageable{
 	}
 	
 	public void viewTable(String language) throws SQLException{
+		
+		/***************************************************************************
+		 *                                                                         *
+		 * This function serves to display all of the names stored in the database *
+		 * for a particular language                                               *
+		 *                                                                         *
+		 ***************************************************************************/
 		
 		PreparedStatement prep = this.conn.prepareStatement("SELECT name FROM names WHERE language=?");
 		prep.setString(1, language);
@@ -112,6 +172,13 @@ public class DBManager implements DBManageable{
 	
 	public int getNumNamesInLanguage(Language lang) throws SQLException{
 		
+		/******************************************************************
+		 *                                                                *
+		 * This function serves to find the number of names stored in the *
+		 * database for a given language                                  *
+		 *                                                                *
+		 ******************************************************************/
+		
 		String languageString = "";
 		if (lang == Language.MAORI) languageString = "Maori";
 		else if (lang == Language.SAMOAN) languageString = "Samoan";
@@ -125,6 +192,13 @@ public class DBManager implements DBManageable{
 	}
 	
 	public int getNumNamesStartString(Language lang, String nameStart) throws SQLException{
+		
+		/**************************************************************************
+		 *                                                                        *
+		 * This function serves to return the number of names in a given language *
+		 * that start with a given string                                         *
+		 *                                                                        *
+		 **************************************************************************/
 		
 		int numNamesInLang = this.getNumNamesInLanguage(lang);
 		int returnNum = 0;
@@ -156,6 +230,15 @@ public class DBManager implements DBManageable{
 	}
 	
 	public int getTrainingSize() throws Exception{
+		
+		/************************************************************************
+		 *                                                                      *
+		 * This function serves to find the number of names that should be used *
+		 * to train the AI. It analyses the number of names for each language,  *
+		 * and finds the lowest number, and returns half of that number         *
+		 *                                                                      *
+		 ************************************************************************/
+		
 		int smallestLangNum = this.getNumNamesInLanguage(Language.ENGLISH);
 		for (Language lang : Language.values()) {
 			int temp = this.getNumNamesInLanguage(lang);
