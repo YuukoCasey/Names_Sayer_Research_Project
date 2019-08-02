@@ -22,7 +22,8 @@ public class TestResultManager {
 	public void closeConnection() throws SQLException{
 		
 		this.conn.close();
-		
+
+		this.conn = null;
 	}
 	
 	public int getHighestTestNumber() throws SQLException{
@@ -36,6 +37,12 @@ public class TestResultManager {
 //			queryRes.add(rs.getInt("TestNumber"));
 			queryRes = rs.getInt("TestNumber");
 		}
+		prep.close();
+		rs.close();
+		
+		prep = null;
+		rs = null;
+		
 		return queryRes;
 	}
 	
@@ -54,6 +61,8 @@ public class TestResultManager {
 		prep.setFloat(3, (float)accuracy);
 		prep.execute();
 		
+		prep.close();
+		prep = null;
 	}
 	
 	public double getAccuracyForLanguageInTest(int testNum, Language lang) throws SQLException{
@@ -73,6 +82,11 @@ public class TestResultManager {
 		while ( rs.next() ) {
 			retVal = (double)rs.getFloat("Accuracy");
 		}
+		prep.close();
+		rs.close();
+		
+		prep = null;
+		rs = null;
 		
 		return retVal;
 	}

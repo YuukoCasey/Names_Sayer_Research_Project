@@ -11,8 +11,10 @@ import dbmanagement.TestResultManager;
 
 public class GraphLID extends AbstractGraph{
 
-	private ArrayList<Node> graphNodes = new ArrayList<>();
-	private ArrayList<Edge> graphEdges = new ArrayList<>();
+//	private ArrayList<Node> graphNodes = new ArrayList<>();
+//	private ArrayList<Edge> graphEdges = new ArrayList<>();
+	
+	private boolean DEBUGGING_BOOL;
 	
 	private HashMap<Language, ArrayList<String>> trainedNames = new HashMap<>();
 	
@@ -22,7 +24,7 @@ public class GraphLID extends AbstractGraph{
 	private static final String[] genericNameStarts = {"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"};
 	
 	public GraphLID() {
-		
+		this.DEBUGGING_BOOL = false;
 	}
 	
 	public void initiateTrainedNamesHasMap() {
@@ -58,6 +60,9 @@ public class GraphLID extends AbstractGraph{
 		
 		PathPointsAccumulator nameGraph = new PathPointsAccumulator(name);
 		
+		int sumV = this.getSumNodeLangVals();
+		int sumE = this.getSumEdgeLangVals();
+		
 		//For every Node that is in the intersection of sets this.graphNodes and nameGraph.nodeList
 		//add the language points of this.graphNodes.getNode(index) to the language values of
 		//nameGraph
@@ -79,7 +84,7 @@ public class GraphLID extends AbstractGraph{
 						int langVal = nodeJ.getLangVal(lang);
 //						if (langVal >= 1) System.out.println("This trigram has a " + lang + " value of " + langVal);
 						
-						nameGraph.increaseLangVal(lang, langVal);
+						nameGraph.increaseLangVal(lang, langVal, sumV);
 					}
 					break;
 				}
@@ -98,7 +103,7 @@ public class GraphLID extends AbstractGraph{
 				if (edgeI.hasSameNames(edgeJ)) {
 					for (Language lang : Language.values()) {
 						int langVal = edgeJ.getLangVal(lang);
-						nameGraph.increaseLangVal(lang, langVal);
+						nameGraph.increaseLangVal(lang, langVal, sumE);
 					}
 					break;
 				}
@@ -607,15 +612,16 @@ public class GraphLID extends AbstractGraph{
 		
 	}
 	
-	public void testAllLanguages(int testNum, TestResultManager trm) throws Exception{
+	public void testAllLanguages(int testNum) throws Exception{
 		
 		for (Language lang : Language.values()) {
-			this.testLanguage(lang, testNum, trm);
+			this.testLanguage(lang, testNum);
 		}
+		
 		
 	}
 	
-	public void testLanguage(Language lang, int testNum, TestResultManager trm) throws Exception{
+	public void testLanguage(Language lang, int testNum) throws Exception{
 		
 		DBManager dbm = new DBManager();
 		dbm.makeConnection();
@@ -649,40 +655,131 @@ public class GraphLID extends AbstractGraph{
 //		System.out.println("For the language " + lang + " the LID accuracy is " 
 //				+ accuracyScore + "%");
 		
-
+		TestResultManager trm = new TestResultManager();
+		trm.makeConnection();
 		trm.insertEntryToDB(testNum, lang, accuracyScore);
+		
+//		if (testNum == 500) {
+//			return;
+//		}
+		
+		trm.closeConnection();
+		trm = null;
+		
+	}
 	
+	public void derefAllVars() {
+		
+//		this.graphNodes = null;
+//		this.graphEdges = null;
+		
+		for (int i = 0; i < this.edgeList.size(); i++) {
+			this.edgeList.set(i, null);
+		}
+		for (int i = 0; i < this.nodeList.size(); i++) {
+			this.nodeList.set(i, null);
+		}
+		
+		this.trainedNames = null;
+		
+	}
+	
+	public int getSumNodeLangVals() {
+		
+		/*******************************************************
+		 *                                                     *
+		 * This function serves the purpose of calculating the *
+		 * sum of the language values stored in every node for *
+		 * every language trained                              *
+		 *                                                     *
+		 *******************************************************/
+		
+		int retVal = 0;
+		
+		for (Node n : this.nodeList) {
+			for (Language lang : Language.values()) {
+				retVal += n.getLangVal(lang);
+			}
+		}
+		
+		return retVal;
+		
+	}
+	
+	public int getSumEdgeLangVals() {
+		
+		/*************************************************
+		 *                                               *
+		 * Same as 'getSumNodeLangVals()' but with edges *
+		 *                                               *
+		 *************************************************/
+		
+		int retVal = 0;
+		
+		for (Edge e : this.edgeList) {
+			for (Language lang : Language.values()) {
+				retVal += e.getLanguageValue(lang);
+			}
+		}
+		
+		return retVal;
+		
 	}
 	
 	public static void main(String[] args) {
 		
-		DBManager dbm = new DBManager();
+//		DBManager dbm = new DBManager();
 //		GraphLID testGraph = new GraphLID();
 //		testGraph.initiateTrainedNamesHasMap();
 		try {
-			dbm.makeConnection();
+//			dbm.makeConnection();
 		
 //			testGraph.trainAllLanguages();
 				
 //			testGraph.testAllLanguages();
-			TestResultManager trm = new TestResultManager();
-			trm.makeConnection();
 			
 			
+//			TestResultManager trm = new TestResultManager();
+//			trm.makeConnection();
+			
+			/******************************************************************** 
+			 *                                                                  *
+			 * WARNING: It is estimated that it will take between 3 and 4 hours *
+			 * to finish executing this cycle                                   *
+			 *                                                                  *
+			 ********************************************************************/
 			for (int i = 1; i <= 1000; i++) {
 //				long startTime = System.nanoTime();
+				
+//				if (i == 101) {
+//					return;
+//				}
+				
 				GraphLID testGraph = new GraphLID();
 				testGraph.initiateTrainedNamesHasMap();
 				testGraph.trainAllLanguages();
-				testGraph.testAllLanguages(i, trm);
+				testGraph.testAllLanguages(i);
+				
+				
+				
+				testGraph.derefAllVars();
+				
+				testGraph = null;
+//				System.gc();
+//				if (i%5 == 1) {
+//					System.gc();
+//				}
+				
 				System.out.println("Test " + i + " complete");
 //				long endTime = System.nanoTime();
 //				long resTime = (endTime-startTime)/1000000;
 //				System.out.println("Testing time taken is " + resTime + "ms");
 			}
 			
-			trm.closeConnection();
-			dbm.closeConnection();
+			
+			
+//			trm.closeConnection();
+//			dbm.closeConnection();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

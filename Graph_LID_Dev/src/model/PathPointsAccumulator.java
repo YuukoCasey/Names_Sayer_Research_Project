@@ -6,17 +6,9 @@ import java.util.HashMap;
 
 public class PathPointsAccumulator extends AbstractGraph{
 
-//	private String currentTrigram, nextTrigram;
 	private String name;
-//	private ArrayList<Node> nodeList = new ArrayList<>();
-//	private ArrayList<Edge> edgeList = new ArrayList<>();
-	private HashMap<Language, Integer> languageValues = new HashMap<>();
-	
-//	public PathPointsAccumulator(String currentTrigram) {
-//		this.currentTrigram = currentTrigram;
-//		this.nextTrigram = "";
-//		this.resetLanguageValues(); 
-//	}
+//	private HashMap<Language, Integer> languageValues = new HashMap<>();
+	private HashMap<Language, Double> languageValues = new HashMap<>();
 	
 	public PathPointsAccumulator(String name) {
 //		this.currentTrigram = currentTrigram;
@@ -27,38 +19,15 @@ public class PathPointsAccumulator extends AbstractGraph{
 		
 	}
 	
-//	public String getCurrentTrigram() {
-//		return this.currentTrigram;
-//	}
-//	
-//	public void setCurrentTrigram(String trigram) {
-//		this.currentTrigram = trigram;
-//	}
-//	
-//	public String getNextTrigram() {
-//		return this.nextTrigram;
-//	}
-//	
-//	public void setNextTrigram(String trigram) {
-//		this.nextTrigram = trigram;
-//	}
-	
-	public void incrementLanguageValue(Language lang) {
-		this.increaseLangVal(lang, 1);
-	}
-	
-	//This function will change the value of 'currentTrigram' to that of 'nextTrigram'
-//	public void moveForward() {
-//		this.currentTrigram = this.nextTrigram;
+//	public void incrementLanguageValue(Language lang) {
+//		this.increaseLangVal(lang, 1);
 //	}
 	
 	public Language getMostLikelyLanguage() {
 		Language returnLang = Language.ENGLISH;
-		int langVal = 0;
-//		System.out.println("\n\nThe name '" + this.name + "' has the following language values");
+		double langVal = 0;
 		for (Language lang : Language.values()) {
-			int newLangVal = this.getLangVal(lang);
-//			System.out.println(lang + " : " + newLangVal);
+			double newLangVal = this.getLangVal(lang);
 			if (newLangVal > langVal) {
 				langVal = newLangVal;
 				returnLang = lang;
@@ -68,16 +37,20 @@ public class PathPointsAccumulator extends AbstractGraph{
 	}
 	
 	public void resetLanguageValues() {
-		for (Language lang : Language.values()) this.languageValues.put(lang, 0);
+		for (Language lang : Language.values()) this.languageValues.put(lang, 0.0);
 	}
 	
-	public void increaseLangVal(Language lang, int incVal) {
-		int currentVal = this.languageValues.get(lang);
-		currentVal += incVal;
+	public void increaseLangVal(Language lang, int incVal, int valSum) {
+		
+		// TODO: Normalise this function
+		
+				
+		double currentVal = this.languageValues.get(lang);
+		currentVal += ((double)incVal / (double)valSum);
 		this.languageValues.put(lang, currentVal);
 	}
 	
-	public int getLangVal(Language lang) {
+	public double getLangVal(Language lang) {
 		return this.languageValues.get(lang);
 	}
 	

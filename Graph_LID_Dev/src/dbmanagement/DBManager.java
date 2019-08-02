@@ -37,6 +37,7 @@ public class DBManager implements DBManageable{
 		 *************************************************************/
 		
 		this.conn.close();
+		this.conn = null;
 	}
 	
 	public boolean nameExists(String name) throws SQLException{
@@ -57,8 +58,20 @@ public class DBManager implements DBManageable{
 		while( rs.next() ) {
 			
 			String res_name = rs.getString("name");
-			if (res_name == name) return true;
+			if (res_name == name) {
+				prep.close();
+				rs.close();
+				prep = null;
+				rs = null;
+				return true;
+			}
 		}
+		//Closing PreparedStatements and ResultSets is being done
+		//to try and find and close any memory leaks
+		prep.close();
+		rs.close();
+		prep = null;
+		rs = null;
 		return false;
 		
 	}
@@ -96,6 +109,12 @@ public class DBManager implements DBManageable{
 		while( rs.next() ) {	
 			nameList.add(rs.getString("name"));
 		}
+		prep.close();
+		rs.close();
+		
+		prep = null;
+		rs = null;
+		
 		return nameList;
 	}
 	
@@ -127,6 +146,11 @@ public class DBManager implements DBManageable{
 			else if (testString.equals("Maori")) returnList.add(Language.MAORI);
 			else if (testString.equals("English")) returnList.add(Language.ENGLISH);
 		}
+		prep.close();
+		rs.close();
+		
+		prep = null;
+		rs = null;
 		
 		return returnList;
 		
@@ -148,6 +172,12 @@ public class DBManager implements DBManageable{
 			System.out.println(rs.getString("name") + "\t\t\t" + rs.getString("language"));
 		}
 		
+		prep.close();
+		rs.close();
+		
+		prep = null;
+		rs = null;
+		
 	}
 	
 	public void viewTable(String language) throws SQLException{
@@ -168,6 +198,12 @@ public class DBManager implements DBManageable{
 			System.out.println("\t" + rs.getString("name"));
 		}
 		
+		prep.close();
+		rs.close();
+		
+		prep = null;
+		rs = null;
+		
 	}
 	
 	public int getNumNamesInLanguage(Language lang) throws SQLException{
@@ -187,7 +223,15 @@ public class DBManager implements DBManageable{
 		PreparedStatement prep = this.conn.prepareStatement("SELECT COUNT(*) AS name_count FROM names WHERE language=?");
 		prep.setString(1, languageString);
 		ResultSet rs = prep.executeQuery();
-		return rs.getInt("name_count");
+		int retVal = rs.getInt("name_count");
+		
+		prep.close();
+		rs.close();
+		
+		prep = null;
+		rs = null;
+		
+		return retVal;
 		
 	}
 	
@@ -303,6 +347,11 @@ public class DBManager implements DBManageable{
 				returnList.add(examineName);
 			}
 		}
+		prep.close();
+		rs.close();
+		
+		prep = null;
+		rs = null;
 		
 		return returnList;
 		
