@@ -1,6 +1,6 @@
 package model;
 
-import java.util.HashMap;
+//import java.util.HashMap;
 
 public class Edge extends GraphFieldTemplate{
 

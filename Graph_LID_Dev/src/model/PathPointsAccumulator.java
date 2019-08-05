@@ -117,4 +117,12 @@ public class PathPointsAccumulator extends AbstractGraph{
 		return this.edgeList;
 	}
 	
+	public void derefLangValues() {
+
+		for (Language lang : Language.values()) {
+			this.languageValues.remove(lang);
+		}
+		this.languageValues = null;
+	}
+	
 }

@@ -51,4 +51,10 @@ public abstract class GraphFieldTemplate {
 		return name.substring(index, index+3);
 	}
 	
+	public void close() {
+		for (Language lang : Language.values()) {
+			this.langWeights.remove(lang);
+		}
+	}
+	
 }

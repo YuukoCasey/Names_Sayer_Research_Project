@@ -14,7 +14,7 @@ public class GraphLID extends AbstractGraph{
 //	private ArrayList<Node> graphNodes = new ArrayList<>();
 //	private ArrayList<Edge> graphEdges = new ArrayList<>();
 	
-	private boolean DEBUGGING_BOOL;
+//	private boolean DEBUGGING_BOOL;
 	
 	private HashMap<Language, ArrayList<String>> trainedNames = new HashMap<>();
 	
@@ -24,7 +24,7 @@ public class GraphLID extends AbstractGraph{
 	private static final String[] genericNameStarts = {"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"};
 	
 	public GraphLID() {
-		this.DEBUGGING_BOOL = false;
+//		this.DEBUGGING_BOOL = false;
 	}
 	
 	public void initiateTrainedNamesHasMap() {
@@ -112,6 +112,10 @@ public class GraphLID extends AbstractGraph{
 		}
 		
 		predictLanguage = nameGraph.getMostLikelyLanguage();
+		
+		nameGraph.derefLangValues();
+		nameGraph.closeNodeAndEdgeHashMaps();
+		nameGraph = null;
 		
 		return predictLanguage;
 			
@@ -338,7 +342,7 @@ public class GraphLID extends AbstractGraph{
 		
 		int numNamesInLang = langNames.size();
 		
-		NamesIterationLoop:
+//		NamesIterationLoop:
 		for (int i = 0; i < numNamesInLang; i++) {
 			
 			String curName = langNames.get(i);
@@ -500,7 +504,7 @@ public class GraphLID extends AbstractGraph{
 		ArrayList<String> langNames = dbm.getNames(lang);
 		
 		int[] phonemeNumber = this.getNumberOfNamesToUse(lang, langNames);
-		int numNameStarters = this.getNumNameStarters(lang);
+//		int numNameStarters = this.getNumNameStarters(lang);
 		
 
 //		String[] nameStart = new String[numNameStarters];
@@ -628,7 +632,7 @@ public class GraphLID extends AbstractGraph{
 		ArrayList<String> langNames = dbm.getNames(lang);
 		
 		int[] phonemeNumber = this.getNumberOfNamesToUse(lang, langNames);
-		int numNameStarters = this.getNumNameStarters(lang);
+//		int numNameStarters = this.getNumNameStarters(lang);
 		
 		String[] nameStart = GraphLID.getNameStarters(lang);
 		
@@ -673,14 +677,14 @@ public class GraphLID extends AbstractGraph{
 //		this.graphNodes = null;
 //		this.graphEdges = null;
 		
-		for (int i = 0; i < this.edgeList.size(); i++) {
-			this.edgeList.set(i, null);
-		}
-		for (int i = 0; i < this.nodeList.size(); i++) {
-			this.nodeList.set(i, null);
-		}
+		this.closeNodeAndEdgeHashMaps();
 		
-		this.trainedNames = null;
+		for (Language lang : Language.values()) {
+			ArrayList<String> arr = this.trainedNames.remove(lang);
+			for (int i = 0; i < arr.size(); i++) {
+				arr.remove(i);
+			}
+		}
 		
 	}
 	
@@ -748,7 +752,7 @@ public class GraphLID extends AbstractGraph{
 			 * to finish executing this cycle                                   *
 			 *                                                                  *
 			 ********************************************************************/
-			for (int i = 1; i <= 1000; i++) {
+			for (int i = 1; i <= 50000; i++) {
 //				long startTime = System.nanoTime();
 				
 //				if (i == 101) {
