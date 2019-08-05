@@ -751,7 +751,7 @@ public class GraphLID extends AbstractGraph{
 //			TestResultManager trm = new TestResultManager();
 //			trm.makeConnection();
 			
-			double trainingPercent = 50.0;
+			double trainingPercent = 10.0;
 			double testingPercent = 100.0 - trainingPercent;
 			
 			for (int i = 1; i <= 1000; i++) {
@@ -764,9 +764,9 @@ public class GraphLID extends AbstractGraph{
 				GraphLID testGraph = new GraphLID();
 				testGraph.initiateTrainedNamesHasMap();
 				testGraph.trainAllLanguages(trainingPercent);
+				System.out.println("Out of curiosity, num of Nodes is " + testGraph.getNodeListSize());
+				System.out.println("Out of curiosity, num of Edges is " + testGraph.getEdgeListSize());
 				testGraph.testAllLanguages(i, testingPercent, trainingPercent);
-				
-				
 				
 				testGraph.derefAllVars();
 				
@@ -776,7 +776,7 @@ public class GraphLID extends AbstractGraph{
 //					System.gc();
 //				}
 				
-				System.out.println("Test " + i + " complete");
+				System.out.println("Test " + i + " complete\n");	
 //				long endTime = System.nanoTime();
 //				long resTime = (endTime-startTime)/1000000;
 //				System.out.println("Testing time taken is " + resTime + "ms");
