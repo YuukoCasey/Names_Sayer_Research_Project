@@ -53,8 +53,6 @@ public class DBManager implements DBManageable{
 		prep.setString(1, name);
 		ResultSet rs = prep.executeQuery();
 		
-		System.out.println(rs);
-		
 		while( rs.next() ) {
 			
 			String res_name = rs.getString("name");
@@ -273,7 +271,7 @@ public class DBManager implements DBManageable{
 		
 	}
 	
-	public int getTrainingSize() throws Exception{
+	public int getTrainingSize(double trainingPercent, Language lang) throws Exception{
 		
 		/************************************************************************
 		 *                                                                      *
@@ -283,13 +281,19 @@ public class DBManager implements DBManageable{
 		 *                                                                      *
 		 ************************************************************************/
 		
-		int smallestLangNum = this.getNumNamesInLanguage(Language.ENGLISH);
-		for (Language lang : Language.values()) {
-			int temp = this.getNumNamesInLanguage(lang);
-			if (temp < smallestLangNum && temp > 0) 
-				smallestLangNum = temp;
-		}
-		smallestLangNum /= 2;
+		int smallestLangNum = this.getNumNamesInLanguage(lang);
+		
+//		for (Language lang : Language.values()) {
+//			int temp = this.getNumNamesInLanguage(lang);
+//			if (temp < smallestLangNum && temp > 0) 
+//				smallestLangNum = temp;
+//		}
+
+		
+		double intermediate_double = (double)smallestLangNum * trainingPercent / 100.0;
+		
+		smallestLangNum = (int)Math.round(intermediate_double);
+		
 		return smallestLangNum;
 	}
 	

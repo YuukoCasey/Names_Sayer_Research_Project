@@ -424,7 +424,7 @@ public class GraphLID extends AbstractGraph{
 		return namesToUse;
 	}
 	
-	public void trainAllLanguages() throws Exception{
+	public void trainAllLanguages(double trainingPercent) throws Exception{
 		
 		/******************************************************************
 		 *                                                                *
@@ -438,10 +438,10 @@ public class GraphLID extends AbstractGraph{
 		 *                                                                *
 		 ******************************************************************/
 		
-		for (Language lang : Language.values()) this.trainLanguage(lang);
+		for (Language lang : Language.values()) this.trainLanguage(lang, trainingPercent);
 	}
 	
-	public int[] getNumberOfNamesToUse(Language lang, ArrayList<String> langNames) throws Exception{
+	public int[] getNumberOfNamesToUse(Language lang, ArrayList<String> langNames, double trainingPercent) throws Exception{
 		
 		DBManager dbm = new DBManager();
 		dbm.makeConnection();
@@ -450,9 +450,14 @@ public class GraphLID extends AbstractGraph{
 		
 		double[] nameFractions = new double[numNameStarters];
 		
-		int trainingSize = dbm.getTrainingSize();
+		int trainingSize = dbm.getTrainingSize(trainingPercent, lang);
 		
 		nameFractions = this.setNameFractions(lang, numNameStarters, langNames, trainingSize);
+		
+//		if (true) {
+//			int[] abcdefg = {1};
+//			return abcdefg;
+//		}
 		
 		int[] phonemeNumber = new int[numNameStarters];
 		for (int i = 0; i < nameFractions.length; i++) {
@@ -485,7 +490,7 @@ public class GraphLID extends AbstractGraph{
 		
 	}
 	
-	public void trainLanguage(Language lang) throws Exception{
+	public void trainLanguage(Language lang, double trainingPercentage) throws Exception{
 		
 		/*********************************************************
 		 *                                                       *
@@ -503,7 +508,7 @@ public class GraphLID extends AbstractGraph{
 		dbm.makeConnection();
 		ArrayList<String> langNames = dbm.getNames(lang);
 		
-		int[] phonemeNumber = this.getNumberOfNamesToUse(lang, langNames);
+		int[] phonemeNumber = this.getNumberOfNamesToUse(lang, langNames, trainingPercentage);
 //		int numNameStarters = this.getNumNameStarters(lang);
 		
 
@@ -616,22 +621,22 @@ public class GraphLID extends AbstractGraph{
 		
 	}
 	
-	public void testAllLanguages(int testNum) throws Exception{
+	public void testAllLanguages(int testNum, double testingPercent, double trainingPercent) throws Exception{
 		
 		for (Language lang : Language.values()) {
-			this.testLanguage(lang, testNum);
+			this.testLanguage(lang, testNum, testingPercent, trainingPercent);
 		}
 		
 		
 	}
 	
-	public void testLanguage(Language lang, int testNum) throws Exception{
+	public void testLanguage(Language lang, int testNum, double testingPercent, double trainingPercent) throws Exception{
 		
 		DBManager dbm = new DBManager();
 		dbm.makeConnection();
 		ArrayList<String> langNames = dbm.getNames(lang);
 		
-		int[] phonemeNumber = this.getNumberOfNamesToUse(lang, langNames);
+		int[] phonemeNumber = this.getNumberOfNamesToUse(lang, langNames, testingPercent);
 //		int numNameStarters = this.getNumNameStarters(lang);
 		
 		String[] nameStart = GraphLID.getNameStarters(lang);
@@ -661,7 +666,7 @@ public class GraphLID extends AbstractGraph{
 		
 		TestResultManager trm = new TestResultManager();
 		trm.makeConnection();
-		trm.insertEntryToDB(testNum, lang, accuracyScore);
+		trm.insertEntryToDB(testNum, lang, accuracyScore, testingPercent, trainingPercent);
 		
 //		if (testNum == 500) {
 //			return;
@@ -746,13 +751,10 @@ public class GraphLID extends AbstractGraph{
 //			TestResultManager trm = new TestResultManager();
 //			trm.makeConnection();
 			
-			/******************************************************************** 
-			 *                                                                  *
-			 * WARNING: It is estimated that it will take between 3 and 4 hours *
-			 * to finish executing this cycle                                   *
-			 *                                                                  *
-			 ********************************************************************/
-			for (int i = 1; i <= 50000; i++) {
+			double trainingPercent = 50.0;
+			double testingPercent = 100.0 - trainingPercent;
+			
+			for (int i = 1; i <= 1000; i++) {
 //				long startTime = System.nanoTime();
 				
 //				if (i == 101) {
@@ -761,8 +763,8 @@ public class GraphLID extends AbstractGraph{
 				
 				GraphLID testGraph = new GraphLID();
 				testGraph.initiateTrainedNamesHasMap();
-				testGraph.trainAllLanguages();
-				testGraph.testAllLanguages(i);
+				testGraph.trainAllLanguages(trainingPercent);
+				testGraph.testAllLanguages(i, testingPercent, trainingPercent);
 				
 				
 				
