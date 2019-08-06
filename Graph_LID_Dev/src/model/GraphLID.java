@@ -18,10 +18,15 @@ public class GraphLID extends AbstractGraph{
 	
 	private HashMap<Language, ArrayList<String>> trainedNames = new HashMap<>();
 	
-	private static final String[] maoriNameStarts = {"A", "E", "H", "I", "K", "M", "N", "Ng", "O", "P", "R", "T", "U", "W", "Wh"};
-	private static final String[] englishNameStarts = {"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"};
-	private static final String[] samoanNameStarts = {"A", "E", "F", "H", "I", "K", "L", "M", "N", "O", "P", "R", "S", "T", "U", "V"};
-	private static final String[] genericNameStarts = {"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"};
+//	private static final String[] maoriNameStarts = {"A", "E", "H", "I", "K", "M", "N", "Ng", "O", "P", "R", "T", "U", "W", "Wh"};
+//	private static final String[] englishNameStarts = {"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"};
+//	private static final String[] samoanNameStarts = {"A", "E", "F", "H", "I", "K", "L", "M", "N", "O", "P", "R", "S", "T", "U", "V"};
+//	private static final String[] genericNameStarts = {"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"};
+
+	private static final String[] maoriNameStarts = {"a", "e", "h", "i", "k", "m", "n", "ng", "o", "p", "r", "t", "u", "w", "wh"};
+	private static final String[] englishNameStarts = {"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"};
+	private static final String[] samoanNameStarts = {"a", "e", "f", "h", "i", "k", "l", "m", "n", "o", "p", "r", "s", "t", "u", "v"};
+	private static final String[] genericNameStarts = {"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"};
 	
 	public GraphLID() {
 //		this.DEBUGGING_BOOL = false;
@@ -751,7 +756,7 @@ public class GraphLID extends AbstractGraph{
 //			TestResultManager trm = new TestResultManager();
 //			trm.makeConnection();
 			
-			double trainingPercent = 10.0;
+			double trainingPercent = 90.0;
 			double testingPercent = 100.0 - trainingPercent;
 			
 			for (int i = 1; i <= 1000; i++) {
