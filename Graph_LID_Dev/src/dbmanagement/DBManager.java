@@ -361,4 +361,19 @@ public class DBManager implements DBManageable{
 		
 	}
 	
+	public Language getLangWithMostNames() throws SQLException{
+		Language retLang = Language.SAMOAN;
+		int maxNames = this.getNumNamesInLanguage(retLang);
+		for (Language lang : Language.values()) {
+			
+			int examineNum = this.getNumNamesInLanguage(lang);
+			if (examineNum > maxNames) {
+				retLang = lang;
+				maxNames = examineNum;
+			}
+			
+		}
+		return retLang;
+	}
+	
 }

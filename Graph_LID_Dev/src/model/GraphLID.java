@@ -17,6 +17,7 @@ public class GraphLID extends AbstractGraph{
 //	private boolean DEBUGGING_BOOL;
 	
 	private HashMap<Language, ArrayList<String>> trainedNames = new HashMap<>();
+//	private HashMap<Language, ArrayList<String>> trainingNames = new HashMap<>();
 	
 //	private static final String[] maoriNameStarts = {"A", "E", "H", "I", "K", "M", "N", "Ng", "O", "P", "R", "T", "U", "W", "Wh"};
 //	private static final String[] englishNameStarts = {"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"};
@@ -65,8 +66,8 @@ public class GraphLID extends AbstractGraph{
 		
 		PathPointsAccumulator nameGraph = new PathPointsAccumulator(name);
 		
-		int sumV = this.getSumNodeLangVals();
-		int sumE = this.getSumEdgeLangVals();
+//		int sumV = this.getSumNodeLangVals();
+//		int sumE = this.getSumEdgeLangVals();
 		
 		//For every Node that is in the intersection of sets this.graphNodes and nameGraph.nodeList
 		//add the language points of this.graphNodes.getNode(index) to the language values of
@@ -89,6 +90,8 @@ public class GraphLID extends AbstractGraph{
 						int langVal = nodeJ.getLangVal(lang);
 //						if (langVal >= 1) System.out.println("This trigram has a " + lang + " value of " + langVal);
 						
+						int sumV = this.getSumNodeLangVals(lang);
+						
 						nameGraph.increaseLangVal(lang, langVal, sumV);
 					}
 					break;
@@ -108,6 +111,8 @@ public class GraphLID extends AbstractGraph{
 				if (edgeI.hasSameNames(edgeJ)) {
 					for (Language lang : Language.values()) {
 						int langVal = edgeJ.getLangVal(lang);
+						
+						int sumE = this.getSumEdgeLangVals(lang);
 						nameGraph.increaseLangVal(lang, langVal, sumE);
 					}
 					break;
@@ -720,6 +725,16 @@ public class GraphLID extends AbstractGraph{
 		
 	}
 	
+	public int getSumNodeLangVals(Language lang) {
+		
+		int retVal = 0;
+		
+		for (Node v : this.nodeList) {
+			retVal += v.getLanguageValue(lang);
+		}
+		return retVal;
+	}
+	
 	public int getSumEdgeLangVals() {
 		
 		/*************************************************
@@ -738,6 +753,16 @@ public class GraphLID extends AbstractGraph{
 		
 		return retVal;
 		
+	}
+	
+	public int getSumEdgeLangVals(Language lang) {
+		
+		int retVal = 0;
+		
+		for (Edge e : this.edgeList) {
+			retVal += e.getLanguageValue(lang);
+		}
+		return retVal;
 	}
 	
 	public static void main(String[] args) {
