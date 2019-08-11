@@ -3,7 +3,7 @@ import sqlite3
 import os
 
 def nameExistsInDB(search_name, c):
-	c.execute("SELECT name FROM names WHERE name=? AND Language=?", (search_name, "Maori"))
+	c.execute("SELECT name FROM names WHERE name=? AND Language=?", (search_name, "Samoan"))
 	res_list = c.fetchall()
 	for i in range(0, len(res_list)):
 		res_list[i] = res_list[i][0]
@@ -22,7 +22,7 @@ def separateWords(arrayOfLines):
 conn = sqlite3.connect("NamesDB.db")
 c = conn.cursor()
 
-path = os.getcwd() + "/" + "MaoriNames.txt"
+path = os.getcwd() + "/" + "SamoanNamesFagogomaoSamoa.txt"
 readingFile = open(path, 'r')
 arrayOfWords = readingFile.readlines()
 arrayOfWords = separateWords(arrayOfWords)
@@ -31,8 +31,8 @@ for i in range(0, len(arrayOfWords)):
 	this_word = arrayOfWords[i]
 	this_word = this_word.lower()
 	if (not(this_word == "")):
-		this_language = "Maori"
-		this_source = "Surnames1-10Dec2018a.pdf, from Catherine Watson"
+		this_language = "Samoan"
+		this_source = "https://savaii.blogspot.com/2011/10/samoan-names.html"
 		if(not(nameExistsInDB(this_word, c))):
 			c.execute("INSERT INTO names VALUES(?,?,?)", (this_word, this_language, this_source))
 			conn.commit()

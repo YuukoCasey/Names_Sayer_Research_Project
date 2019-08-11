@@ -66,8 +66,8 @@ public class GraphLID extends AbstractGraph{
 		
 		PathPointsAccumulator nameGraph = new PathPointsAccumulator(name);
 		
-//		int sumV = this.getSumNodeLangVals();
-//		int sumE = this.getSumEdgeLangVals();
+		int sumV = this.getSumNodeLangVals();
+		int sumE = this.getSumEdgeLangVals();
 		
 		//For every Node that is in the intersection of sets this.graphNodes and nameGraph.nodeList
 		//add the language points of this.graphNodes.getNode(index) to the language values of
@@ -90,7 +90,7 @@ public class GraphLID extends AbstractGraph{
 						int langVal = nodeJ.getLangVal(lang);
 //						if (langVal >= 1) System.out.println("This trigram has a " + lang + " value of " + langVal);
 						
-						int sumV = this.getSumNodeLangVals(lang);
+//						int sumV = this.getSumNodeLangVals(lang);
 						
 						nameGraph.increaseLangVal(lang, langVal, sumV);
 					}
@@ -112,7 +112,7 @@ public class GraphLID extends AbstractGraph{
 					for (Language lang : Language.values()) {
 						int langVal = edgeJ.getLangVal(lang);
 						
-						int sumE = this.getSumEdgeLangVals(lang);
+//						int sumE = this.getSumEdgeLangVals(lang);
 						nameGraph.increaseLangVal(lang, langVal, sumE);
 					}
 					break;

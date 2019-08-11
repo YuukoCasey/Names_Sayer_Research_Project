@@ -57,6 +57,9 @@ while (True):
 	if (input_language == "English"):
 		input_source = "https://www.behindthename.com/names/usage/english"
 
+	elif (input_language == "Samoan"):
+		input_source = "https://www.behindthename.com/submit/names/usage/samoan"
+
 	c.execute("SELECT name FROM names WHERE name = ? AND language = ?;", (input_name, input_language))
 	query_result = c.fetchall()
 
