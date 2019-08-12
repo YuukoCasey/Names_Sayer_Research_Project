@@ -781,7 +781,7 @@ public class GraphLID extends AbstractGraph{
 //			TestResultManager trm = new TestResultManager();
 //			trm.makeConnection();
 			
-			double trainingPercent = 10.0;
+			double trainingPercent = 90.0;
 			double testingPercent = 100.0 - trainingPercent;
 			
 			for (int i = 1; i <= 1000; i++) {
