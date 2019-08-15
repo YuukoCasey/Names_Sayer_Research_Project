@@ -26,7 +26,7 @@ public class GraphLID extends AbstractGraph{
 
 	private static final String[] maoriNameStarts = {"a", "e", "h", "i", "k", "m", "n", "ng", "o", "p", "r", "t", "u", "w", "wh"};
 	private static final String[] englishNameStarts = {"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"};
-	private static final String[] samoanNameStarts = {"a", "e", "f", "h", "i", "k", "l", "m", "n", "o", "p", "r", "s", "t", "u", "v"};
+	private static final String[] samoanNameStarts = {"a", "e", "f", "g", "h", "i", "k", "l", "m", "n", "o", "p", "r", "s", "t", "u", "v"};
 	private static final String[] genericNameStarts = {"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"};
 	
 	public GraphLID() {

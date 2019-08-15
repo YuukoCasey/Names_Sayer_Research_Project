@@ -32,7 +32,7 @@ for i in range(0, len(arrayOfWords)):
 	this_word = this_word.lower()
 	if (not(this_word == "")):
 		this_language = "Samoan"
-		this_source = "www.babynamescube.com/blog/baby-names/samoan-baby-names-boys-girls/"
+		this_source = "http://www.americanlastnames.us/last-names/Samoan/A/A-0.html"
 		if(not(nameExistsInDB(this_word, c))):
 			c.execute("INSERT INTO names VALUES(?,?,?)", (this_word, this_language, this_source))
 			conn.commit()
