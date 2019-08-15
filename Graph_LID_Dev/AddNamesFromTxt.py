@@ -22,7 +22,7 @@ def separateWords(arrayOfLines):
 conn = sqlite3.connect("NamesDB.db")
 c = conn.cursor()
 
-path = os.getcwd() + "/" + "SamoanNamesFagogomaoSamoa.txt"
+path = os.getcwd() + "/" + "SamoanNames.txt"
 readingFile = open(path, 'r')
 arrayOfWords = readingFile.readlines()
 arrayOfWords = separateWords(arrayOfWords)
@@ -32,7 +32,7 @@ for i in range(0, len(arrayOfWords)):
 	this_word = this_word.lower()
 	if (not(this_word == "")):
 		this_language = "Samoan"
-		this_source = "https://savaii.blogspot.com/2011/10/samoan-names.html"
+		this_source = "www.babynamescube.com/blog/baby-names/samoan-baby-names-boys-girls/"
 		if(not(nameExistsInDB(this_word, c))):
 			c.execute("INSERT INTO names VALUES(?,?,?)", (this_word, this_language, this_source))
 			conn.commit()
