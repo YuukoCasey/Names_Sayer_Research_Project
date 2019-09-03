@@ -45,12 +45,5 @@ public class Edge extends GraphFieldTemplate{
 		return this.langWeights.get(lang);
 	}
 	
-//	public int getLangVal(Language lang) {
-//		return this.langWeights.get(lang);
-//	}
-	
-//	public void incrementLangVal(Language lang) {
-//		this.langWeights.put(lang, (this.langWeights.get(lang) + 1));
-//	}
 	
 }

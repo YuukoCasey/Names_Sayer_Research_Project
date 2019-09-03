@@ -1,7 +1,6 @@
 package dbmanagement;
 
 import java.sql.*;
-//import java.util.ArrayList;
 import model.Language;
 
 public class TestResultManager {

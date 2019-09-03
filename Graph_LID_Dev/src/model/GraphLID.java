@@ -6,6 +6,7 @@ import model.Language;
 import java.util.HashMap;
 import dbmanagement.DBManager;
 import java.util.Random;
+import java.util.Scanner;
 import java.sql.SQLException;
 import dbmanagement.TestResultManager;
 
@@ -353,6 +354,7 @@ public class GraphLID extends AbstractGraph{
 		int numNamesInLang = langNames.size();
 		
 //		NamesIterationLoop:
+		//Worst-case scenario: O(n) = numLanesInLang * numNameStarters = m * n
 		for (int i = 0; i < numNamesInLang; i++) {
 			
 			String curName = langNames.get(i);
@@ -460,14 +462,9 @@ public class GraphLID extends AbstractGraph{
 		
 		double[] nameFractions = new double[numNameStarters];
 		
-		int trainingSize = dbm.getTrainingSize(trainingPercent, lang);
+		int trainingSize = dbm.getTrainingSize(trainingPercent, lang); //O(n) = 1
 		
 		nameFractions = this.setNameFractions(lang, numNameStarters, langNames, trainingSize);
-		
-//		if (true) {
-//			int[] abcdefg = {1};
-//			return abcdefg;
-//		}
 		
 		int[] phonemeNumber = new int[numNameStarters];
 		for (int i = 0; i < nameFractions.length; i++) {
@@ -516,29 +513,23 @@ public class GraphLID extends AbstractGraph{
 		
 		DBManager dbm = new DBManager();
 		dbm.makeConnection();
-		ArrayList<String> langNames = dbm.getNames(lang);
+		ArrayList<String> langNames = dbm.getNames(lang); //O(n) = n
+		
 		
 		int[] phonemeNumber = this.getNumberOfNamesToUse(lang, langNames, trainingPercentage);
-//		int numNameStarters = this.getNumNameStarters(lang);
-		
 
-//		String[] nameStart = new String[numNameStarters];
-//		for (int i = 0; i < numNameStarters; i++) {
-//			if (lang == Language.ENGLISH) nameStart[i] = GraphLID.englishNameStarts[i];
-//			else if (lang == Language.MAORI) nameStart[i] = GraphLID.maoriNameStarts[i];
-//			else if (lang == Language.SAMOAN) nameStart[i] = GraphLID.samoanNameStarts[i];
-//		}
+		
 		String[] nameStart = GraphLID.getNameStarters(lang);
 		
+		
 		ArrayList<ArrayList<String>> namesToUse = new ArrayList<>();
+		
 		namesToUse = GraphLID.selectTrainingNames(langNames, phonemeNumber, nameStart, lang);
 		
-		for (int i = 0; i < namesToUse.size(); i++) {
+		for (int i = 0; i < namesToUse.size(); i++) { //O(n) = 
 			ArrayList<String> extractedNames = namesToUse.get(i);
 			
 			for (int j = 0; j < extractedNames.size(); j++) {
-				
-//				System.out.println("The name " + extractedNames.get(j) + " will be parsed for the language " + lang);
 				
 				String currentName = extractedNames.get(j);
 				this.addNameToTrainedData(lang, currentName);
@@ -697,8 +688,9 @@ public class GraphLID extends AbstractGraph{
 		for (Language lang : Language.values()) {
 			ArrayList<String> arr = this.trainedNames.remove(lang);
 			for (int i = 0; i < arr.size(); i++) {
-				arr.remove(i);
+				arr.set(i, null);
 			}
+			arr.clear();
 		}
 		
 	}
@@ -767,77 +759,59 @@ public class GraphLID extends AbstractGraph{
 	
 	public static void main(String[] args) {
 		
-//		DBManager dbm = new DBManager();
-//		GraphLID testGraph = new GraphLID();
-//		testGraph.initiateTrainedNamesHasMap();
 		try {
-//			dbm.makeConnection();
-		
-//			testGraph.trainAllLanguages();
-				
-//			testGraph.testAllLanguages();
 			
+			double trainingPercent = 90.0;
+//			double testingPercent = 100.0 - trainingPercent;
+
+			long startTime = System.nanoTime();
+			GraphLID demoGraph = new GraphLID();
+			demoGraph.initiateTrainedNamesHasMap();
+			System.out.println("About to train the graph!!!");
+			demoGraph.trainAllLanguages(trainingPercent);
+			long nanoTimeTaken = System.nanoTime() - startTime;
+			nanoTimeTaken /= 1000000000;
+			System.out.println("Out of curiosoty, there are " + 
+					demoGraph.getNodeListSize() + " nodes and " +
+					demoGraph.getEdgeListSize() + " edges\n");
+			System.out.println("Training once took " + nanoTimeTaken + " seconds");
 			
-//			TestResultManager trm = new TestResultManager();
-//			trm.makeConnection();
-			
-			double trainingPercent = 20.0;
-			double testingPercent = 100.0 - trainingPercent;
-			
-			for (int i = 1; i <= 500; i++) {
-//				long startTime = System.nanoTime();
+			Scanner userIn = new Scanner(System.in);
+			while(true) {
+				System.out.println("Enter a name you wish to test, or enter q to exit:\n\t");
+				String testName = userIn.nextLine();
 				
-//				if (i == 101) {
-//					return;
-//				}
+				String lowerName = testName.toLowerCase();
+				if (lowerName.equals("q")) 
+					break;
 				
-				GraphLID testGraph = new GraphLID();
-				testGraph.initiateTrainedNamesHasMap();
-				testGraph.trainAllLanguages(trainingPercent);
-				System.out.println("Out of curiosity, num of Nodes is " + testGraph.getNodeListSize());
-				System.out.println("Out of curiosity, num of Edges is " + testGraph.getEdgeListSize());
-				testGraph.testAllLanguages(i, testingPercent, trainingPercent);
+				System.out.println(testName + " is a " + demoGraph.predictLanguage(lowerName) + " name");
 				
-				testGraph.derefAllVars();
 				
-				testGraph = null;
-//				System.gc();
-//				if (i%5 == 1) {
-//					System.gc();
-//				}
-				
-				System.out.println("Test " + i + " complete\n");	
-//				long endTime = System.nanoTime();
-//				long resTime = (endTime-startTime)/1000000;
-//				System.out.println("Testing time taken is " + resTime + "ms");
 			}
-			System.out.println("FINISHED!!!");
+			userIn.close();
+			System.out.println("Closing application...");
+//			for (int i = 1; i <= 500; i++) {
+//				
+//				GraphLID testGraph = new GraphLID();
+//				testGraph.initiateTrainedNamesHasMap();
+//				testGraph.trainAllLanguages(trainingPercent);
+//				System.out.println("Out of curiosity, num of Nodes is " + testGraph.getNodeListSize());
+//				System.out.println("Out of curiosity, num of Edges is " + testGraph.getEdgeListSize());
+//				testGraph.testAllLanguages(i, testingPercent, trainingPercent);
+//				
+//				testGraph.derefAllVars();
+//				
+//				testGraph = null;
+//				
+//				System.out.println("Test " + i + " complete\n");	
+//
+//			}
+//			System.out.println("FINISHED!!!");
 			
-			
-			
-//			trm.closeConnection();
-//			dbm.closeConnection();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
-		
-//		int nodeListSize = testGraph.getNodeListSize();
-//		int edgeListSize = testGraph.getEdgeListSize();
-//		System.out.println("Number of nodes is " + nodeListSize);
-//		System.out.println("Number of edges is " + edgeListSize + "\n");
-//		
-//		Language testLanguage = testGraph.predictLanguage("Mata");
-//		System.out.println("The most likely language for 'Mata' is " + testLanguage + "\n");
-//		testLanguage = testGraph.predictLanguage("Fetuao");
-//		System.out.println("The most likely language for 'Fetuao' is " + testLanguage + "\n");
-//		
-//		testLanguage = testGraph.predictLanguage("Maxwell");
-//		System.out.println("The most likely language for 'Maxwell' is " + testLanguage + "\n");
-//		testLanguage = testGraph.predictLanguage("Aileen");
-//		System.out.println("The most likely language for 'Aileen' is " + testLanguage + "\n");
-		
-		
 		
 	}
 

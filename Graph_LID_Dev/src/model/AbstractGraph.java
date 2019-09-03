@@ -129,14 +129,17 @@ public abstract class AbstractGraph {
 	
 	public void closeNodeAndEdgeHashMaps() {
 		for (int i = 0; i < this.edgeList.size(); i++) {
-			Edge e = this.edgeList.remove(i);
+			Edge e = this.edgeList.get(i);
 			e.close();
+			this.edgeList.set(i, e);
 		}
 		for (int i = 0; i < this.nodeList.size(); i++) {
-			Node v = this.nodeList.remove(i);
+			Node v = this.nodeList.get(i);
 			v.close();
+			this.nodeList.set(i, v);
 		}
-		
+		this.edgeList.clear();
+		this.nodeList.clear();
 	}
 	
 }

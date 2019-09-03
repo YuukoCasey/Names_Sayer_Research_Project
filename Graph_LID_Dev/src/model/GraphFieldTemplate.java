@@ -6,26 +6,6 @@ import java.util.HashMap;
 public abstract class GraphFieldTemplate {
 
 	protected HashMap<Language, Integer> langWeights = new HashMap<>();
-//	private String trigram;
-//	private String name;
-	
-//	public void setName(String name) {
-//		this.name = name;
-//	}
-//	
-//	public String getName() {
-//		return this.name;
-//	}
-	
-	
-//	public void setTrigram(String trigram) {
-//		while(trigram.length() < 3) trigram += "_";
-//		if (trigram.length() == 3) this.trigram = trigram;
-//	}
-//	
-//	public String getTrigram() {
-//		return this.trigram;
-//	}
 	
 	public void increaseLangVal(Language lang, int incVal) {
 		langWeights.put(lang, (langWeights.get(lang) + incVal));
@@ -53,8 +33,9 @@ public abstract class GraphFieldTemplate {
 	
 	public void close() {
 		for (Language lang : Language.values()) {
-			this.langWeights.remove(lang);
+			this.langWeights.put(lang, null);
 		}
+		this.langWeights.clear();
 	}
 	
 }

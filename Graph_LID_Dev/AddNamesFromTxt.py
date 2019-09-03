@@ -3,7 +3,7 @@ import sqlite3
 import os
 
 def nameExistsInDB(search_name, c):
-	c.execute("SELECT name FROM names WHERE name=? AND Language=?", (search_name, "Samoan"))
+	c.execute("SELECT name FROM names WHERE name=? AND Language=?", (search_name, "English"))
 	res_list = c.fetchall()
 	for i in range(0, len(res_list)):
 		res_list[i] = res_list[i][0]
@@ -22,7 +22,7 @@ def separateWords(arrayOfLines):
 conn = sqlite3.connect("NamesDB.db")
 c = conn.cursor()
 
-path = os.getcwd() + "/" + "SamoanPlaceNames.txt"
+path = os.getcwd() + "/" + "EnglishPlaceNames.txt"
 readingFile = open(path, 'r')
 arrayOfWords = readingFile.readlines()
 arrayOfWords = separateWords(arrayOfWords)
@@ -31,8 +31,8 @@ for i in range(0, len(arrayOfWords)):
 	this_word = arrayOfWords[i]
 	this_word = this_word.lower()
 	if (not(this_word == "")):
-		this_language = "Samoan"
-		this_source = "https://en.wikipedia.org/wiki/List_of_cities,_towns_and_villages_in_Samoa"
+		this_language = "English"
+		this_source = "https://www.oxfordreference.com/view/10.1093/acref/9780199609086.001.0001/acref-9780199609086?btog=chap&hide=true&pageSize=100&skipEditions=true&sort=titlesort&source=%2F10.1093%2Facref%2F9780199609086.001.0001%2Facref-9780199609086"
 		if(not(nameExistsInDB(this_word, c))):
 			c.execute("INSERT INTO names VALUES(?,?,?)", (this_word, this_language, this_source))
 			conn.commit()
