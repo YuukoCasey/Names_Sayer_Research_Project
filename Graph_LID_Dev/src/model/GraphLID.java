@@ -762,52 +762,54 @@ public class GraphLID extends AbstractGraph{
 		try {
 			
 			double trainingPercent = 90.0;
-//			double testingPercent = 100.0 - trainingPercent;
+			double testingPercent = 100.0 - trainingPercent;
 
-			long startTime = System.nanoTime();
-			GraphLID demoGraph = new GraphLID();
-			demoGraph.initiateTrainedNamesHasMap();
-			System.out.println("About to train the graph!!!");
-			demoGraph.trainAllLanguages(trainingPercent);
-			long nanoTimeTaken = System.nanoTime() - startTime;
-			nanoTimeTaken /= 1000000000;
-			System.out.println("Out of curiosoty, there are " + 
-					demoGraph.getNodeListSize() + " nodes and " +
-					demoGraph.getEdgeListSize() + " edges\n");
-			System.out.println("Training once took " + nanoTimeTaken + " seconds");
-			
-			Scanner userIn = new Scanner(System.in);
-			while(true) {
-				System.out.println("Enter a name you wish to test, or enter q to exit:\n\t");
-				String testName = userIn.nextLine();
-				
-				String lowerName = testName.toLowerCase();
-				if (lowerName.equals("q")) 
-					break;
-				
-				System.out.println(testName + " is a " + demoGraph.predictLanguage(lowerName) + " name");
-				
-				
-			}
-			userIn.close();
-			System.out.println("Closing application...");
-//			for (int i = 1; i <= 500; i++) {
+//			long startTime = System.nanoTime();
+//			GraphLID demoGraph = new GraphLID();
+//			demoGraph.initiateTrainedNamesHasMap();
+//			System.out.println("About to train the graph!!!");
+//			demoGraph.trainAllLanguages(trainingPercent);
+//			long nanoTimeTaken = System.nanoTime() - startTime;
+//			nanoTimeTaken /= 1000000000;
+//			System.out.println("Out of curiosoty, there are " + 
+//					demoGraph.getNodeListSize() + " nodes and " +
+//					demoGraph.getEdgeListSize() + " edges\n");
+//			System.out.println("Training once took " + nanoTimeTaken + " seconds");
+//			
+//			Scanner userIn = new Scanner(System.in);
+//			while(true) {
+//				System.out.println("Enter a name you wish to test, or enter q to exit:\n\t");
+//				String testName = userIn.nextLine();
 //				
-//				GraphLID testGraph = new GraphLID();
-//				testGraph.initiateTrainedNamesHasMap();
-//				testGraph.trainAllLanguages(trainingPercent);
-//				System.out.println("Out of curiosity, num of Nodes is " + testGraph.getNodeListSize());
-//				System.out.println("Out of curiosity, num of Edges is " + testGraph.getEdgeListSize());
-//				testGraph.testAllLanguages(i, testingPercent, trainingPercent);
+//				String lowerName = testName.toLowerCase();
+//				if (lowerName.equals("q")) 
+//					break;
 //				
-//				testGraph.derefAllVars();
+//				System.out.println(testName + " is a " + demoGraph.predictLanguage(lowerName) + " name");
 //				
-//				testGraph = null;
 //				
-//				System.out.println("Test " + i + " complete\n");	
-//
 //			}
-//			System.out.println("FINISHED!!!");
+//			userIn.close();
+//			System.out.println("Closing application...");
+			
+			
+			for (int i = 1; i <= 500; i++) {
+				
+				GraphLID testGraph = new GraphLID();
+				testGraph.initiateTrainedNamesHasMap();
+				testGraph.trainAllLanguages(trainingPercent);
+				System.out.println("Out of curiosity, num of Nodes is " + testGraph.getNodeListSize());
+				System.out.println("Out of curiosity, num of Edges is " + testGraph.getEdgeListSize());
+				testGraph.testAllLanguages(i, testingPercent, trainingPercent);
+				
+				testGraph.derefAllVars();
+				
+				testGraph = null;
+				
+				System.out.println("Test " + i + " complete\n");	
+
+			}
+			System.out.println("FINISHED!!!");
 			
 		} catch (Exception e) {
 			e.printStackTrace();
