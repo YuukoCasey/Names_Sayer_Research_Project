@@ -27,7 +27,9 @@ public class PathPointsAccumulator extends AbstractGraph{
 		Language returnLang = Language.ENGLISH;
 		double langVal = 0;
 		for (Language lang : Language.values()) {
+			
 			double newLangVal = this.getLangVal(lang);
+//			System.out.println("The language " + lang + " has a weight of " + newLangVal);
 			if (newLangVal > langVal) {
 				langVal = newLangVal;
 				returnLang = lang;
@@ -41,9 +43,6 @@ public class PathPointsAccumulator extends AbstractGraph{
 	}
 	
 	public void increaseLangVal(Language lang, int incVal, int valSum) {
-		
-		// TODO: Normalise this function
-		
 				
 		double currentVal = this.languageValues.get(lang);
 		currentVal += ((double)incVal / (double)valSum);
