@@ -6,7 +6,7 @@ import model.Language;
 import java.util.HashMap;
 import dbmanagement.DBManager;
 import java.util.Random;
-import java.util.Scanner;
+//import java.util.Scanner;
 import java.sql.SQLException;
 import dbmanagement.TestResultManager;
 
@@ -761,7 +761,7 @@ public class GraphLID extends AbstractGraph{
 		
 		try {
 			
-			double trainingPercent = 90.0;
+			double trainingPercent = 70.0;
 			double testingPercent = 100.0 - trainingPercent;
 
 //			long startTime = System.nanoTime();
@@ -793,7 +793,7 @@ public class GraphLID extends AbstractGraph{
 //			System.out.println("Closing application...");
 			
 			
-			for (int i = 1; i <= 500; i++) {
+			for (int i = 1; i <= 50; i++) {
 				
 				GraphLID testGraph = new GraphLID();
 				testGraph.initiateTrainedNamesHasMap();
