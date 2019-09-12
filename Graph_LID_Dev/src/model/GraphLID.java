@@ -9,6 +9,7 @@ import java.util.Random;
 //import java.util.Scanner;
 import java.sql.SQLException;
 import dbmanagement.TestResultManager;
+import dbmanagement.GraphSaver;
 
 public class GraphLID extends AbstractGraph{
 
@@ -628,7 +629,17 @@ public class GraphLID extends AbstractGraph{
 			this.testLanguage(lang, testNum, testingPercent, trainingPercent);
 		}
 		
+	}
+	
+	public HashMap<Language, Double> retTestAllLanguages(int testNum, double testingPercent, double trainingPercent) throws Exception{
 		
+		HashMap<Language, Double> accuracies = new HashMap<>();
+		
+		for (Language lang : Language.values()) {
+			accuracies.put(lang, this.retTestLanguage(lang, testNum, testingPercent, trainingPercent));
+		}
+		
+		return accuracies;
 	}
 	
 	public void testLanguage(Language lang, int testNum, double testingPercent, double trainingPercent) throws Exception{
@@ -638,7 +649,6 @@ public class GraphLID extends AbstractGraph{
 		ArrayList<String> langNames = dbm.getNames(lang);
 		
 		int[] phonemeNumber = this.getNumberOfNamesToUse(lang, langNames, testingPercent);
-//		int numNameStarters = this.getNumNameStarters(lang);
 		
 		String[] nameStart = GraphLID.getNameStarters(lang);
 		
@@ -662,19 +672,48 @@ public class GraphLID extends AbstractGraph{
 		}
 		accuracyScore /= (double)testNames.size();
 		accuracyScore *= 100.0;
-//		System.out.println("For the language " + lang + " the LID accuracy is " 
-//				+ accuracyScore + "%");
-		
+
 		TestResultManager trm = new TestResultManager();
 		trm.makeConnection();
 		trm.insertEntryToDB(testNum, lang, accuracyScore, testingPercent, trainingPercent);
 		
-//		if (testNum == 500) {
-//			return;
-//		}
-		
 		trm.closeConnection();
 		trm = null;
+		
+	}
+	
+	public double retTestLanguage(Language lang, int testNum, double testingPercent, double trainingPercent) throws Exception{
+		
+		DBManager dbm = new DBManager();
+		dbm.makeConnection();
+		ArrayList<String> langNames = dbm.getNames(lang);
+		
+		int[] phonemeNumber = this.getNumberOfNamesToUse(lang, langNames, testingPercent);
+		
+		String[] nameStart = GraphLID.getNameStarters(lang);
+		
+		ArrayList<ArrayList<String>> namesToUse = this.selectTestingNames(langNames, phonemeNumber, nameStart, lang);
+		
+		ArrayList<String> testNames = new ArrayList<>();
+		for (int i = 0; i < namesToUse.size(); i++) {
+			for (int j = 0; j < namesToUse.get(i).size(); j++) {
+				testNames.add(namesToUse.get(i).get(j));
+			}
+		}
+		
+		//Now for the actual testing of the LID method
+		double accuracyScore = 0.0;
+		for (int i = 0; i < testNames.size(); i++) {
+			String curName = testNames.get(i);
+			Language testLang = this.predictLanguage(curName);
+			if (testLang.equals(lang)) {
+				accuracyScore += 1.0;
+			}
+		}
+		accuracyScore /= (double)testNames.size();
+		accuracyScore *= 100.0;
+		
+		return accuracyScore;
 		
 	}
 	
@@ -757,6 +796,19 @@ public class GraphLID extends AbstractGraph{
 		return retVal;
 	}
 	
+	public static double getVectorMag(ArrayList<Double> vector) {
+		
+		double retDouble = 0.0;
+		
+		for (double curNum : vector) {
+			retDouble += (Math.pow(curNum, 2));
+		}
+		
+		retDouble = Math.sqrt(retDouble);
+		return retDouble;
+		
+	}
+	
 	public static void main(String[] args) {
 		
 		try {
@@ -792,6 +844,8 @@ public class GraphLID extends AbstractGraph{
 //			userIn.close();
 //			System.out.println("Closing application...");
 			
+			GraphSaver gs = new GraphSaver();
+			gs.makeConnection();
 			
 			for (int i = 1; i <= 50; i++) {
 				
@@ -800,7 +854,22 @@ public class GraphLID extends AbstractGraph{
 				testGraph.trainAllLanguages(trainingPercent);
 				System.out.println("Out of curiosity, num of Nodes is " + testGraph.getNodeListSize());
 				System.out.println("Out of curiosity, num of Edges is " + testGraph.getEdgeListSize());
-				testGraph.testAllLanguages(i, testingPercent, trainingPercent);
+				HashMap<Language, Double> testRes = testGraph.retTestAllLanguages(i, testingPercent, trainingPercent);
+				
+				ArrayList<Double> results = new ArrayList<>();
+				for (Language lang : Language.values()) 
+					results.add(testRes.get(lang));
+				
+				double magnitude = GraphLID.getVectorMag(results);
+							
+				if (magnitude > gs.getOverallAccuracy()) {
+					System.out.println("About to update saved graph");
+					ArrayList<Double> accuracies = new ArrayList<>();
+					accuracies.add(magnitude);
+					for (double d : results) accuracies.add(d);
+					gs.saveGraph(testGraph, accuracies);
+					
+				}
 				
 				testGraph.derefAllVars();
 				
@@ -810,6 +879,8 @@ public class GraphLID extends AbstractGraph{
 
 			}
 			System.out.println("FINISHED!!!");
+			
+			gs.closeConnection();
 			
 		} catch (Exception e) {
 			e.printStackTrace();

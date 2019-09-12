@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import model.Language;
 import model.Node;
 import model.Edge;
+import model.GraphLID;
 
 public class GraphSaver {
 
@@ -172,6 +173,58 @@ public class GraphSaver {
 		prep.close();
 		
 		return retEdgeList;
+	}
+	
+	public void clearNodesTable() throws SQLException{
+		
+		String command = "DELETE FROM Nodes";
+		PreparedStatement prep = this.conn.prepareStatement(command);
+		prep.execute();
+		prep.close();
+		prep = null;
+		
+	}
+	
+	public void clearEdgesTable() throws SQLException{
+		
+		String command = "DELETE FROM Edges";
+		PreparedStatement prep = this.conn.prepareStatement(command);
+		prep.execute();
+		prep.close();
+		prep = null;
+		
+	}
+	
+	public void saveGraph(GraphLID graph, ArrayList<Double> accuracies) throws SQLException{
+		
+		this.clearNodesTable();
+		this.clearEdgesTable();
+		
+		System.out.println("Cleared nodes and edges from db");
+		
+		for (int i = 0; i < graph.getNodeListSize(); i++) {
+			Node n = graph.getNode(i);
+			this.insertNodeToDB(n);
+		}
+		
+		System.out.println("Saved all nodes");
+		
+		for (int i = 0; i < graph.getEdgeListSize(); i++) {
+			Edge e = graph.getEdge(i);
+			this.insertEdgeToDB(e);
+		}
+		
+		System.out.println("Saved all edges");
+		
+		double overall = accuracies.get(0);
+		double english = accuracies.get(1);
+		double maori = accuracies.get(2);
+		double samoan = accuracies.get(3);
+		
+		this.updateAccuracies(overall, english, maori, samoan);
+		
+		System.out.println("Graph saved!");
+		
 	}
 	
 }
