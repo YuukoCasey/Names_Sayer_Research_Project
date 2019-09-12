@@ -1,0 +1,87 @@
+package model;
+
+import java.io.IOException;
+import java.util.Scanner;
+
+import model.GraphLID;
+import model.Language;
+
+import javax.sound.sampled.LineUnavailableException;
+
+
+public class Main {
+	
+	/**
+	 * The main method from which our application is starting
+	 * 
+	 * @param args
+	 */
+	public static void main(String[] args) {
+		TextToSpeech tts = new TextToSpeech();
+		
+		
+		//Print all the available voices
+		tts.getAvailableVoices().stream().forEach(voice -> System.out.println("Voice: " + voice));
+		
+
+		GraphLID graphLID = new GraphLID();
+		graphLID.initiateTrainedNamesHasMap();
+		try {
+			graphLID.trainAllLanguages(10.0);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		// Placeholder for UI of getting name
+		Scanner userIn = new Scanner(System.in);
+		
+		while (true) {
+		
+		System.out.println("Enter a name you wish to , or press 'q' to exit:\n\t");
+		String testName = userIn.nextLine();
+		String lowerName = testName.toLowerCase();
+//		userIn.close();
+		if (lowerName.equals("q")) break;
+		
+		// Get language of name from LID
+		
+		Language userLang = graphLID.predictLanguage(lowerName);
+		
+
+		// Set voice according to language
+		switch(userLang) {
+			case SAMOAN: {
+				break;
+			}
+			case MAORI: {	
+				break;
+			}
+			default: {	
+				tts.setVoice("cmu-slt-hsmm"); //set english voice
+				break;
+			}		
+		}
+		
+		
+		
+		// TTS output 
+		try {
+			tts.speak(lowerName);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (LineUnavailableException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		}
+		userIn.close();
+		
+	}
+	
+}

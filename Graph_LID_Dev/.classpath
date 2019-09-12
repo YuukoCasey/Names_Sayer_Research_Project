@@ -7,5 +7,17 @@
 	</classpathentry>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="lib" path="C:/Users/vhdlg/Desktop/SaveGraph/Names_Sayer_Research_Project/Graph_LID_Dev/sqlite-jdbc-3.27.2.1.jar"/>
+	<classpathentry kind="lib" path="C:/Users/vhdlg/Desktop/TTS/resources/libraries/marytts-client-5.2-jar-with-dependencies.jar"/>
+	<classpathentry kind="lib" path="C:/Users/vhdlg/Desktop/TTS/resources/libraries/marytts-lang-de-5.2.jar"/>
+	<classpathentry kind="lib" path="C:/Users/vhdlg/Desktop/TTS/resources/libraries/marytts-lang-en-5.2.jar"/>
+	<classpathentry kind="lib" path="C:/Users/vhdlg/Desktop/TTS/resources/libraries/marytts-lang-fr-5.2.jar"/>
+	<classpathentry kind="lib" path="C:/Users/vhdlg/Desktop/TTS/resources/libraries/marytts-lang-it-5.2.jar"/>
+	<classpathentry kind="lib" path="C:/Users/vhdlg/Desktop/TTS/resources/libraries/marytts-lang-lb-5.2.jar"/>
+	<classpathentry kind="lib" path="C:/Users/vhdlg/Desktop/TTS/resources/libraries/marytts-lang-ru-5.2.jar"/>
+	<classpathentry kind="lib" path="C:/Users/vhdlg/Desktop/TTS/resources/libraries/marytts-lang-sv-5.2.jar"/>
+	<classpathentry kind="lib" path="C:/Users/vhdlg/Desktop/TTS/resources/libraries/marytts-lang-te-5.2.jar"/>
+	<classpathentry kind="lib" path="C:/Users/vhdlg/Desktop/TTS/resources/libraries/marytts-lang-tr-5.2.jar"/>
+	<classpathentry kind="lib" path="C:/Users/vhdlg/Desktop/TTS/resources/libraries/marytts-runtime-5.2-jar-with-dependencies.jar"/>
+	<classpathentry kind="lib" path="C:/Users/vhdlg/Desktop/TTS/resources/libraries/voice-cmu-slt-hsmm-5.2.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
