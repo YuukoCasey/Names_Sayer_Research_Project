@@ -33,7 +33,6 @@ public class TestResultManager {
 		ResultSet rs = prep.executeQuery();
 		
 		while( rs.next() ) {
-//			queryRes.add(rs.getInt("TestNumber"));
 			queryRes = rs.getInt("TestNumber");
 		}
 		prep.close();

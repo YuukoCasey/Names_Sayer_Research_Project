@@ -17,6 +17,12 @@ public abstract class GraphFieldTemplate {
 		}
 	}
 	
+	public void setLanguageValue(int newVal, Language lang) {
+		
+		langWeights.put(lang, newVal);
+		
+	}
+	
 	public int getLangVal(Language lang) {
 		return langWeights.get(lang);
 	}
