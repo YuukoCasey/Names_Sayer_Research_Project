@@ -25,6 +25,12 @@ public class Node extends GraphFieldTemplate{
 		for (Language lang : Language.values()) langWeights.put(lang, 0);
 	}
 	
+	public Node(String trigram, HashMap<Language, Integer> langValues) {
+		this.setTrigram(trigram);
+		for (Language lang : Language.values())
+			langWeights.put(lang, langValues.get(lang));
+	}
+	
 	public void displayFeatures() {
 		
 		System.out.println("DISPLAYING THE FEATURES OF A NODE");
