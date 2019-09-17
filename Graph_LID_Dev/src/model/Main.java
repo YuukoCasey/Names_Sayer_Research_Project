@@ -36,29 +36,19 @@ public class Main {
 			e.printStackTrace();
 		}
 		
-//		GraphLID graphLID = new GraphLID();
-//		graphLID.initiateTrainedNamesHasMap();
-//		try {
-//			graphLID.trainAllLanguages(10.0);
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//		}
-		
 		// Placeholder for UI of getting name
 		Scanner userIn = new Scanner(System.in);
 		
 		while (true) {
 		
-			System.out.println("Enter a name you wish to hear, or press 'q' to exit:\n\t");
+			System.out.println("Enter a name you wish to hear, or press 'q' to exit:");
 			String testName = userIn.nextLine();
 			String lowerName = testName.toLowerCase();
-//			userIn.close();
 			if (lowerName.equals("q")) break;
 		
 			// Get language of name from LID
-		
 			Language userLang = graphLID.predictLanguage(lowerName);
-			System.out.println(testName + " is a " + userLang + " name");
+			System.out.println(testName + " is a " + userLang + " name\n");
 
 			// Set voice according to language
 			switch(userLang) {
@@ -93,7 +83,6 @@ public class Main {
 			}
 		}
 		userIn.close();
-//		graphLID.derefAllVars();
 		
 	}
 	

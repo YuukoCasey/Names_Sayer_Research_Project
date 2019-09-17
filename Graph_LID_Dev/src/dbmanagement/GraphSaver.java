@@ -22,7 +22,7 @@ public class GraphSaver {
 	}
 	
 	
-public void insertEntryToDB(int testNum, Language lang, double accuracy, double testingPercent, double trainingPercent) throws SQLException{
+	public void insertEntryToDB(int testNum, Language lang, double accuracy, double testingPercent, double trainingPercent) throws SQLException{
 		
 		String langString = "English";
 		if (lang.equals(Language.MAORI)) {
@@ -43,5 +43,18 @@ public void insertEntryToDB(int testNum, Language lang, double accuracy, double 
 		prep = null;
 	}
 	
+	public double getOverallAccuracy() throws SQLException {
+		
+		String command = "SELECT OverallAccuracy FROM Accuracies";
+		PreparedStatement prep = this.conn.prepareStatement(command);
+		ResultSet rs = prep.executeQuery();
+		
+		double overallAccuracy = rs.getDouble("OverallAccuracy");
+		
+		rs.close();
+		prep.close();
+		
+		return overallAccuracy;
+	}
 	
 }
