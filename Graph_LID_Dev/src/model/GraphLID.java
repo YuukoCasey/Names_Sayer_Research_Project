@@ -832,74 +832,75 @@ public class GraphLID extends AbstractGraph{
 		
 		try {
 			
-			double trainingPercent = 70.0;
-			double testingPercent = 100.0 - trainingPercent;
+//			double trainingPercent = 70.0;
+//			double testingPercent = 100.0 - trainingPercent;
 
 //			long startTime = System.nanoTime();
-//			GraphLID demoGraph = new GraphLID();
+			GraphLID demoGraph = new GraphLID();
 //			demoGraph.initiateTrainedNamesHasMap();
+			System.out.println("Making graph");
 //			System.out.println("About to train the graph!!!");
-//			demoGraph.trainAllLanguages(trainingPercent);
-//			long nanoTimeTaken = System.nanoTime() - startTime;
-//			nanoTimeTaken /= 1000000000;
-//			System.out.println("Out of curiosoty, there are " + 
-//					demoGraph.getNodeListSize() + " nodes and " +
-//					demoGraph.getEdgeListSize() + " edges\n");
-//			System.out.println("Training once took " + nanoTimeTaken + " seconds");
-//			
-//			Scanner userIn = new Scanner(System.in);
-//			while(true) {
-//				System.out.println("Enter a name you wish to test, or enter q to exit:\n\t");
-//				String testName = userIn.nextLine();
-//				
-//				String lowerName = testName.toLowerCase();
-//				if (lowerName.equals("q")) 
-//					break;
-//				
-//				System.out.println(testName + " is a " + demoGraph.predictLanguage(lowerName) + " name");
-//				
-//				
-//			}
-//			userIn.close();
-//			System.out.println("Closing application...");
+			
+			GraphLoader gl = new GraphLoader();
+			gl.makeConnection();
+			demoGraph.setNodeList(gl.loadNodes());
+			demoGraph.setEdgeList(gl.loadEdges());
+			gl.closeConnection();
+			gl = null;
+			
+			Scanner userIn = new Scanner(System.in);
+			while(true) {
+				System.out.println("Enter a name you wish to test, or enter q to exit:\n\t");
+				String testName = userIn.nextLine();
+				
+				String lowerName = testName.toLowerCase();
+				if (lowerName.equals("q")) 
+					break;
+				
+				System.out.println(testName + " is a " + demoGraph.predictLanguage(lowerName) + " name");
+				
+				
+			}
+			userIn.close();
+			System.out.println("Closing application...");
 			
 			/* START OF GRAPH TESTING AND SAVING SECTION */
-			GraphSaver gs = new GraphSaver();
-			gs.makeConnection();
-			
-			for (int i = 1; i <= 50; i++) {
-				
-				GraphLID testGraph = new GraphLID();
-				testGraph.initiateTrainedNamesHasMap();
-				testGraph.trainAllLanguages(trainingPercent);
-				System.out.println("Out of curiosity, num of Nodes is " + testGraph.getNodeListSize());
-				System.out.println("Out of curiosity, num of Edges is " + testGraph.getEdgeListSize());
-				HashMap<Language, Double> testRes = testGraph.retTestAllLanguages(i, testingPercent, trainingPercent);
-				
-				ArrayList<Double> results = new ArrayList<>();
-				for (Language lang : Language.values()) 
-					results.add(testRes.get(lang));
-				
-				double magnitude = GraphLID.getAverage(results);
-							
-				if (magnitude > gs.getOverallAccuracy()) {
-					System.out.println("About to update saved graph");
-					ArrayList<Double> accuracies = new ArrayList<>();
-					accuracies.add(magnitude);
-					for (double d : results) accuracies.add(d);
-					gs.saveGraph(testGraph, accuracies);
-					
-				}
-				
-				testGraph.derefAllVars();
-				
-				testGraph = null;
-				
-				System.out.println("Test " + i + " complete\n");	
-
-			}
-			System.out.println("FINISHED!!!");
-			gs.closeConnection();
+//			GraphSaver gs = new GraphSaver();
+//			gs.makeConnection();
+//			
+//			for (int i = 1; i <= 50; i++) {
+//				
+//				GraphLID testGraph = new GraphLID();
+//				testGraph.initiateTrainedNamesHasMap();
+//				testGraph.trainAllLanguages(trainingPercent);
+//				System.out.println("Out of curiosity, num of Nodes is " + testGraph.getNodeListSize());
+//				System.out.println("Out of curiosity, num of Edges is " + testGraph.getEdgeListSize());
+//				HashMap<Language, Double> testRes = testGraph.retTestAllLanguages(i, testingPercent, trainingPercent);
+//				
+//				ArrayList<Double> results = new ArrayList<>();
+//				for (Language lang : Language.values()) 
+//					results.add(testRes.get(lang));
+//				
+//				double magnitude = GraphLID.getAverage(results);
+//							
+//				if (magnitude > gs.getOverallAccuracy()) {
+//					System.out.println("About to update saved graph");
+//					ArrayList<Double> accuracies = new ArrayList<>();
+//					accuracies.add(magnitude);
+//					for (double d : results) accuracies.add(d);
+//					gs.saveGraph(testGraph, accuracies);
+//					
+//				}
+//				
+//				testGraph.derefAllVars();
+//				
+//				testGraph = null;
+//				
+//				System.out.println("Test " + i + " complete\n");	
+//
+//			}
+//			System.out.println("FINISHED!!!");
+//			gs.closeConnection();
 			
 			/* END OF GRAPH TESTING AND SAVING SECTION */
 			

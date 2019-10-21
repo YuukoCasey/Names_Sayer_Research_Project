@@ -25,9 +25,10 @@ public class Main {
 		
 		//Print all the available voices
 		
-		tts.getAvailableVoices().stream().forEach(voice -> System.out.println("Voice: " + voice));
+//		tts.getAvailableVoices().stream().forEach(voice -> System.out.println("Voice: " + voice));
+		tts.getAvailableVoices().stream().forEach(voice -> System.out.print(""));
 		
-		/**
+		
 		GraphLoader gl = new GraphLoader();
 		GraphLID graphLID = new GraphLID();
 		
@@ -39,7 +40,7 @@ public class Main {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		*/
+		
 		// Placeholder for UI of getting name
 		
 		Scanner userIn = new Scanner(System.in);
@@ -52,18 +53,16 @@ public class Main {
 			if (lowerName.equals("q")) break;
 		 
 			// Test code starts here
-			System.out.println("Enter m for Maori or e for English");
-			String userLang = userIn.nextLine();
-			if(userLang.equals("m")) {
-				tts.setVoice("akl_mi_pk_voice1-hsmm"); //set maori voice
-			} else {
-				tts.setVoice("cmu-slt-hsmm"); //set english voice
-				//tts.setVoice("sh_enc_real-hsmm"); //South african voice?
-				//tts.setVoice("akl_nz_sh_neu-hsmm"); //Not that good voice
-			}
+//			System.out.println("Enter m for Maori or e for English");
+//			String userLang = userIn.nextLine();
+//			if(userLang.equals("m")) {
+//				tts.setVoice("akl_mi_pk_voice1-hsmm"); //set maori voice
+//			} else {
+//				tts.setVoice("cmu-slt-hsmm"); //set english voice
+//			}
 			// Test code ends here
 			
-			/**
+			
 			// Get language of name from LID
 			Language userLang = graphLID.predictLanguage(lowerName);
 			System.out.println(testName + " is a " + userLang + " name\n");
@@ -73,16 +72,18 @@ public class Main {
 			
 			switch(userLang) {
 				case SAMOAN: {
+					tts.setVoice("akl_mi_pk_voice1-hsmm");
 					break;
 				}
-				case MAORI: {	
+				case MAORI: {
+					tts.setVoice("akl_mi_pk_voice1-hsmm");
 					break;
 				}
 				default: {	
 					tts.setVoice("cmu-slt-hsmm"); //set english voice
 					break;
 				}		
-			}*/
+			}
 		
 		
 		
