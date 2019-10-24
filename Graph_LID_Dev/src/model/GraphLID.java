@@ -9,7 +9,6 @@ import java.util.Random;
 import java.util.Scanner;
 import java.sql.SQLException;
 import dbmanagement.TestResultManager;
-import dbmanagement.GraphSaver;
 import dbmanagement.GraphLoader;
 
 public class GraphLID extends AbstractGraph{

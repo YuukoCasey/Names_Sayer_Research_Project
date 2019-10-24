@@ -6,26 +6,27 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="lib" path="C:/Users/vhdlg/Desktop/Names_Sayer_Research_Project/Graph_LID_Dev/sqlite-jdbc-3.27.2.1.jar"/>
-	<classpathentry kind="lib" path="C:/Users/vhdlg/Desktop/Names_Sayer_Research_Project/Graph_LID_Dev/resources/libraries/marytts-client-5.3-SNAPSHOT-jar-with-dependencies.jar"/>
-	<classpathentry kind="lib" path="C:/Users/vhdlg/Desktop/Names_Sayer_Research_Project/Graph_LID_Dev/resources/libraries/marytts-lang-de-5.3-SNAPSHOT.jar"/>
-	<classpathentry kind="lib" path="C:/Users/vhdlg/Desktop/Names_Sayer_Research_Project/Graph_LID_Dev/resources/libraries/marytts-lang-en-5.3-SNAPSHOT.jar"/>
-	<classpathentry kind="lib" path="C:/Users/vhdlg/Desktop/Names_Sayer_Research_Project/Graph_LID_Dev/resources/libraries/marytts-lang-fr-5.3-SNAPSHOT.jar"/>
-	<classpathentry kind="lib" path="C:/Users/vhdlg/Desktop/Names_Sayer_Research_Project/Graph_LID_Dev/resources/libraries/marytts-lang-it-5.3-SNAPSHOT.jar"/>
-	<classpathentry kind="lib" path="C:/Users/vhdlg/Desktop/Names_Sayer_Research_Project/Graph_LID_Dev/resources/libraries/marytts-lang-lb-5.3-SNAPSHOT.jar"/>
-	<classpathentry kind="lib" path="C:/Users/vhdlg/Desktop/Names_Sayer_Research_Project/Graph_LID_Dev/resources/libraries/marytts-lang-mi-5.3-SNAPSHOT.jar"/>
-	<classpathentry kind="lib" path="C:/Users/vhdlg/Desktop/Names_Sayer_Research_Project/Graph_LID_Dev/resources/libraries/marytts-lang-ru-5.3-SNAPSHOT.jar"/>
-	<classpathentry kind="lib" path="C:/Users/vhdlg/Desktop/Names_Sayer_Research_Project/Graph_LID_Dev/resources/libraries/marytts-lang-sv-5.3-SNAPSHOT.jar"/>
-	<classpathentry kind="lib" path="C:/Users/vhdlg/Desktop/Names_Sayer_Research_Project/Graph_LID_Dev/resources/libraries/marytts-lang-te-5.3-SNAPSHOT.jar"/>
-	<classpathentry kind="lib" path="C:/Users/vhdlg/Desktop/Names_Sayer_Research_Project/Graph_LID_Dev/resources/libraries/marytts-lang-tr-5.3-SNAPSHOT.jar"/>
-	<classpathentry kind="lib" path="C:/Users/vhdlg/Desktop/Names_Sayer_Research_Project/Graph_LID_Dev/resources/libraries/marytts-runtime-5.3-SNAPSHOT-jar-with-dependencies.jar"/>
-	<classpathentry kind="lib" path="C:/Users/vhdlg/Desktop/Names_Sayer_Research_Project/Graph_LID_Dev/resources/libraries/voice-akl_mi_pk_voice1-hsmm-5.3-SNAPSHOT.jar"/>
-	<classpathentry kind="lib" path="C:/Users/vhdlg/Desktop/Names_Sayer_Research_Project/Graph_LID_Dev/resources/libraries/voice-akl_nz_sh_neu-hsmm-5.3-SNAPSHOT.jar"/>
-	<classpathentry kind="lib" path="C:/Users/vhdlg/Desktop/Names_Sayer_Research_Project/Graph_LID_Dev/resources/libraries/voice-cmu-slt-hsmm-5.3-SNAPSHOT.jar"/>
-	<classpathentry kind="lib" path="C:/Users/vhdlg/Desktop/Names_Sayer_Research_Project/Graph_LID_Dev/resources/libraries/voice-sh_anx-hsmm-5.3-SNAPSHOT.jar"/>
-	<classpathentry kind="lib" path="C:/Users/vhdlg/Desktop/Names_Sayer_Research_Project/Graph_LID_Dev/resources/libraries/voice-sh_enc_real-hsmm-5.3-SNAPSHOT.jar"/>
-	<classpathentry kind="lib" path="C:/Users/vhdlg/Desktop/Names_Sayer_Research_Project/Graph_LID_Dev/resources/libraries/voice-sh_enc-hsmm-5.3-SNAPSHOT.jar"/>
-	<classpathentry kind="lib" path="C:/Users/vhdlg/Desktop/Names_Sayer_Research_Project/Graph_LID_Dev/resources/libraries/voice-sh_neu-hsmm-5.3-SNAPSHOT.jar"/>
-	<classpathentry kind="lib" path="C:/Users/vhdlg/Desktop/Names_Sayer_Research_Project/Graph_LID_Dev/resources/libraries/voice-sh-hsmm-5.3-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Admin/Documents/GitHub/joez/Names_Sayer_Research_Project/Graph_LID_Dev/resources/libraries/marytts-client-5.3-SNAPSHOT-jar-with-dependencies.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Admin/Documents/GitHub/joez/Names_Sayer_Research_Project/Graph_LID_Dev/resources/libraries/marytts-lang-de-5.3-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Admin/Documents/GitHub/joez/Names_Sayer_Research_Project/Graph_LID_Dev/resources/libraries/marytts-lang-en-5.3-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Admin/Documents/GitHub/joez/Names_Sayer_Research_Project/Graph_LID_Dev/resources/libraries/marytts-lang-fr-5.3-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Admin/Documents/GitHub/joez/Names_Sayer_Research_Project/Graph_LID_Dev/resources/libraries/marytts-lang-it-5.3-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Admin/Documents/GitHub/joez/Names_Sayer_Research_Project/Graph_LID_Dev/resources/libraries/marytts-lang-lb-5.3-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Admin/Documents/GitHub/joez/Names_Sayer_Research_Project/Graph_LID_Dev/resources/libraries/marytts-lang-mi-5.3-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Admin/Documents/GitHub/joez/Names_Sayer_Research_Project/Graph_LID_Dev/resources/libraries/marytts-lang-ru-5.3-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Admin/Documents/GitHub/joez/Names_Sayer_Research_Project/Graph_LID_Dev/resources/libraries/marytts-lang-sv-5.3-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Admin/Documents/GitHub/joez/Names_Sayer_Research_Project/Graph_LID_Dev/resources/libraries/marytts-lang-te-5.3-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Admin/Documents/GitHub/joez/Names_Sayer_Research_Project/Graph_LID_Dev/resources/libraries/marytts-lang-tr-5.3-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Admin/Documents/GitHub/joez/Names_Sayer_Research_Project/Graph_LID_Dev/resources/libraries/marytts-runtime-5.3-SNAPSHOT-jar-with-dependencies.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Admin/Documents/GitHub/joez/Names_Sayer_Research_Project/Graph_LID_Dev/resources/libraries/voice-akl_mi_pk_voice1-hsmm-5.3-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Admin/Documents/GitHub/joez/Names_Sayer_Research_Project/Graph_LID_Dev/resources/libraries/voice-akl_nz_sh_neu-hsmm-5.3-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Admin/Documents/GitHub/joez/Names_Sayer_Research_Project/Graph_LID_Dev/resources/libraries/voice-cmu-slt-hsmm-5.3-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Admin/Documents/GitHub/joez/Names_Sayer_Research_Project/Graph_LID_Dev/resources/libraries/voice-sh_anx-hsmm-5.3-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Admin/Documents/GitHub/joez/Names_Sayer_Research_Project/Graph_LID_Dev/resources/libraries/voice-sh_enc_real-hsmm-5.3-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Admin/Documents/GitHub/joez/Names_Sayer_Research_Project/Graph_LID_Dev/resources/libraries/voice-sh_enc-hsmm-5.3-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Admin/Documents/GitHub/joez/Names_Sayer_Research_Project/Graph_LID_Dev/resources/libraries/voice-sh_neu-hsmm-5.3-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Admin/Documents/GitHub/joez/Names_Sayer_Research_Project/Graph_LID_Dev/resources/libraries/voice-sh-hsmm-5.3-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Admin/Documents/GitHub/joez/Names_Sayer_Research_Project/Graph_LID_Dev/sqlite-jdbc-3.27.2.1.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Admin/Documents/GitHub/joez/Names_Sayer_Research_Project/Graph_LID_Dev/resources/libraries/freetts.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
