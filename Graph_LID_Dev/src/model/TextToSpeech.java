@@ -10,7 +10,6 @@ import marytts.exceptions.SynthesisException;
 import javax.sound.sampled.AudioFileFormat.Type;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.UnsupportedAudioFileException;
 
 import model.Language;
 import com.sun.speech.freetts.*;
@@ -137,10 +136,8 @@ public class TextToSpeech {
 			        // a format that our audio player can use
 			        try {
 						return AudioSystem.getAudioInputStream(englishSynthesizedAudio);
-					} catch (UnsupportedAudioFileException e) {
-						e.printStackTrace();
-					} catch (IOException e) {
-						e.printStackTrace();
+					} catch (Exception e) {
+						;
 					}
 				}
 				// Placeholder default for when working on LID for new languages not yet supported here.
