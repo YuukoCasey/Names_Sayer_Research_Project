@@ -47,14 +47,12 @@ public class TextToSpeech {
 	private String englishSynthesizedAudioFileName = "english"; // file name of " " excluding .wav
     
 	/**
-	 * Constructor initializes the MaryTTS and FreeTTS synthesizers
-	 * and assigns the English voice to FreeTTS
+	 * Constructor initializes the MaryTTS synthesizer
 	 */
 	public TextToSpeech() {
 		try {
 			_marytts = new LocalMaryInterface();
-	        VoiceManager voiceManager = VoiceManager.getInstance();
-	        _freetts = voiceManager.getVoice(ENGLISHVOICENAME);
+
 		} catch (MaryConfigurationException e) {
 			e.printStackTrace();
 		} catch (IllegalArgumentException e) {
@@ -119,6 +117,11 @@ public class TextToSpeech {
 				}
 				// Synthesizes English pronunciation of the name
 				case ENGLISH: {
+					// initialise FreeTTS synthesizer + assign the English voice to FreeTTS
+					// this is done here as allocation of resources includes some meta info
+					// for previously said speech, so this has to be cleared on each synthesis
+			        VoiceManager voiceManager = VoiceManager.getInstance();
+			        _freetts = voiceManager.getVoice(ENGLISHVOICENAME);
 					// allocate resources to FreeTTS and prepare for synthesize
 			        _freetts.allocate();
 			        // Change audioplayer to a filewriter so that the file can be converted into
@@ -131,7 +134,7 @@ public class TextToSpeech {
 			        
 			        // close the filewriter so the file gets saved and can be opened by other i/o
 			        fileWriter.close();
-			        
+			        _freetts.deallocate();
 			        // try to convert the file holding the synthesized english audio into 
 			        // a format that our audio player can use
 			        try {
