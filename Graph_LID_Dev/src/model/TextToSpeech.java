@@ -11,7 +11,7 @@ import javax.sound.sampled.AudioFileFormat.Type;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 
-import model.Language;
+import model.Main.Language;
 import com.sun.speech.freetts.*;
 import com.sun.speech.freetts.audio.SingleFileAudioPlayer;
 
