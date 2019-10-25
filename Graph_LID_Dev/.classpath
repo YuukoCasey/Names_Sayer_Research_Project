@@ -29,5 +29,13 @@
 	<classpathentry kind="lib" path="C:/Users/Admin/Documents/GitHub/joez/Names_Sayer_Research_Project/Graph_LID_Dev/sqlite-jdbc-3.27.2.1.jar"/>
 	<classpathentry kind="lib" path="C:/Users/Admin/Documents/GitHub/joez/Names_Sayer_Research_Project/Graph_LID_Dev/resources/libraries/freetts.jar"/>
 	<classpathentry kind="lib" path="C:/Users/Admin/Documents/GitHub/joez/Names_Sayer_Research_Project/Graph_LID_Dev/resources/libraries/cmu_us_kal.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Admin/Documents/GitHub/joez/Names_Sayer_Research_Project/Graph_LID_Dev/resources/libraries/cmu_time_awb.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Admin/Documents/GitHub/joez/Names_Sayer_Research_Project/Graph_LID_Dev/resources/libraries/cmudict04.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Admin/Documents/GitHub/joez/Names_Sayer_Research_Project/Graph_LID_Dev/resources/libraries/cmulex.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Admin/Documents/GitHub/joez/Names_Sayer_Research_Project/Graph_LID_Dev/resources/libraries/cmutimelex.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Admin/Documents/GitHub/joez/Names_Sayer_Research_Project/Graph_LID_Dev/resources/libraries/en_us.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Admin/Documents/GitHub/joez/Names_Sayer_Research_Project/Graph_LID_Dev/resources/libraries/freetts-jsapi10.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Admin/Documents/GitHub/joez/Names_Sayer_Research_Project/Graph_LID_Dev/resources/libraries/jsapi.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Admin/Documents/GitHub/joez/Names_Sayer_Research_Project/Graph_LID_Dev/resources/libraries/mbrola.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
