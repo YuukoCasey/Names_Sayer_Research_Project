@@ -28,5 +28,6 @@
 	<classpathentry kind="lib" path="C:/Users/Admin/Documents/GitHub/joez/Names_Sayer_Research_Project/Graph_LID_Dev/resources/libraries/voice-sh-hsmm-5.3-SNAPSHOT.jar"/>
 	<classpathentry kind="lib" path="C:/Users/Admin/Documents/GitHub/joez/Names_Sayer_Research_Project/Graph_LID_Dev/sqlite-jdbc-3.27.2.1.jar"/>
 	<classpathentry kind="lib" path="C:/Users/Admin/Documents/GitHub/joez/Names_Sayer_Research_Project/Graph_LID_Dev/resources/libraries/freetts.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Admin/Documents/GitHub/joez/Names_Sayer_Research_Project/Graph_LID_Dev/resources/libraries/cmu_us_kal.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
